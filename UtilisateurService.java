@@ -86,8 +86,6 @@ public class UtilisateurService {
  	   Filiere Nvfiliere = null;
  	   // faire la requete correspondante dans la bdd//////////////////////////////////////
  	   Utilisateur utilisateur = new Utilisateur(utilisateurList.size(), name, Nvfiliere, email, mdp);
-
- 	   utilisateurList.add(utilisateur);
  	   
  	   // faire la requete correspondante dans la bdd//////////////////////////////////////
  	   
