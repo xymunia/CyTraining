@@ -5,6 +5,7 @@ import com.example.api.model.Revision;
 import com.example.api.model.Taux;
 import com.example.api.model.Utilisateur;
 import com.example.api.model.Admin;
+import com.example.api.model.Chapitre;
 
 import org.springframework.stereotype.Service;
 
@@ -55,6 +56,16 @@ public class UtilisateurService {
         return optional;
     }
     
+    public Optional<List<Utilisateur>> getListUtilisateur(Integer id) {
+        Optional<List<Utilisateur>> optional = Optional.empty();
+        
+        // faut verifier si c'est bien l'id d'un admin qui puisse acceder a la liste des utilisateurs
+        //optional = Optional.of(repository.findAll());
+        
+        
+        return optional;
+    }
+    
     public Optional<Utilisateur> putUtilisateur(int id, String nom, int idFiliere, String email, String mdp){
     	Optional<Utilisateur> optional = Optional.empty();
  	   
@@ -93,6 +104,8 @@ public class UtilisateurService {
  	   return optional;
     }
 
+    
+    
     
     
     public Optional<Utilisateur> getAuthentification(String email, String mdp) {

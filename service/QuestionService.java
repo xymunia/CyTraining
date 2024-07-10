@@ -10,6 +10,19 @@ import com.example.api.model.Chapitre;
 import com.example.api.model.Question;
 
 public class QuestionService {
+	
+	
+	 public Optional<List<Question>> getListQuestion(int id){    ////////////////////// ca retourne une liste, un array ????
+	    	Optional<List<Question>> optional = Optional.empty();
+	  	   
+	    	// il faut verifier si c'est bien l'id d'un admin
+	  	   
+	  	    // faire la requete correspondante dans la bdd//////////////////////////////////////
+	  	   
+	  	    //optional = Optional.of(repository.findAll());
+	  	    return optional;
+	 }
+	
 
 	public Optional<Question> postQuestion(int idUtilisateur, String correction, int idxBonneRep, 
 			String[] reponses, String indice, int idChapitre){

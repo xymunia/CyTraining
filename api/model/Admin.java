@@ -55,13 +55,15 @@ public class Admin extends Utilisateur{
 		}
 	}
 	
-	public void certifier(Matiere matiere, Utilisateur utilisateur)
+	public Admin certifier(Matiere matiere, Utilisateur utilisateur)
 	{
+		Admin nouveauAdmin = null;
 		if(certifs.contains(matiere))
 		{
-			Admin nouveauAdmin = new Admin(utilisateur);
+			nouveauAdmin = new Admin(utilisateur);
 			nouveauAdmin.addCertif(matiere);
 			utilisateur = null;
 		}
+		return nouveauAdmin;
 	}
 }
