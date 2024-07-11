@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Taux {
-	private Utilisateur utilisateur;
 	private Map<Matiere, Float> tauxReussite;
 	private Map<UE, Float> tauxCompletion;
 	private List<Question> questionsRepondu;
