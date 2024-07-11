@@ -11,26 +11,18 @@ public class Taux {
 	private List<Question> questionsRepondu;
 	
 	
-	public Taux(Utilisateur utilisateur)
-	{
-		this.utilisateur = utilisateur; 
+	public Taux()
+	{	
 		this.tauxReussite = new HashMap<Matiere, Float>();
 		this.tauxCompletion = new HashMap<UE, Float>();
 		this.questionsRepondu = new ArrayList<Question>(); // tout ceci doit pouvoir s'optimiser si besoin //////////////////////////////////
 	}
 	
-	public Utilisateur getUtilisateur()
-	{
-		return utilisateur;
-	}
 	public List<Question> getQuestionsRepondu() {
 		return questionsRepondu;
 	}
 	public void setQuestionsRepondu(List<Question> questionsRepondu) {
 		this.questionsRepondu = questionsRepondu;
-	}
-	public void setUtilisateur(Utilisateur utilisateur) {
-		this.utilisateur = utilisateur;
 	}
 	public void setTauxReussite(Map<Matiere, Float> tauxReussite) {
 		this.tauxReussite = tauxReussite;
