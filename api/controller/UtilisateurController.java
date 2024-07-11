@@ -30,7 +30,7 @@ public class UtilisateurController {
     }
     
     @GetMapping("/utilisateurs")
-    public List<Utilisateur> getUtilisatuer(@RequestParam Integer idAdmin){
+    public List<Utilisateur> getUtilisateurs(@RequestParam Integer idAdmin){
         Optional<List<Utilisateur>> utilisateur = utilisateurService.getListUtilisateur(idAdmin);// il faut probablement changer le type de retour
         return (List<Utilisateur>) utilisateur.orElse(null);
     }
