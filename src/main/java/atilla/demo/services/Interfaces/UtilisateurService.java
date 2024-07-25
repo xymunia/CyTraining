@@ -10,6 +10,7 @@ public interface UtilisateurService {
 
 
     UtilisateurDto inscrire (UtilisateurDto utilisateurDto);
+    UtilisateurDto inscrire1 (UtilisateurDto utilisateurDto);
 
 
     UtilisateurDto rechercherId (int id);

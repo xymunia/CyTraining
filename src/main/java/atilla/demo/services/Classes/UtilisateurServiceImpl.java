@@ -2,7 +2,9 @@ package atilla.demo.services.Classes;
 
 import atilla.demo.Mappers.UtilisateurMapperImpl;
 import atilla.demo.Repositories.UtilisateurRepository;
+import atilla.demo.classes.Filiere;
 import atilla.demo.classes.Utilisateur;
+import atilla.demo.dto.FiliereDto;
 import atilla.demo.dto.UtilisateurDto;
 import atilla.demo.services.Interfaces.UtilisateurService;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,9 +23,12 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     private UtilisateurRepository utilisateurRepository;
     private UtilisateurMapperImpl utilisateurMapper;
 
-    public UtilisateurServiceImpl(UtilisateurRepository utilisateurRepository, UtilisateurMapperImpl utilisateurMapper) {
+    private FiliereServiceImpl filiereService;
+
+    public UtilisateurServiceImpl(UtilisateurRepository utilisateurRepository, UtilisateurMapperImpl utilisateurMapper, FiliereServiceImpl filiereService) {
         this.utilisateurRepository = utilisateurRepository;
         this.utilisateurMapper = utilisateurMapper;
+        this.filiereService = filiereService;
     }
 
     @Override
@@ -33,6 +38,16 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         return this.utilisateurMapper.toDTo(utilisateurSaved);
     }
 
+    @Override
+    public UtilisateurDto inscrire1(UtilisateurDto utilisateurDto) {
+        Filiere filiere = utilisateurDto.getFiliere();
+        Utilisateur utilisateur = this.utilisateurMapper.toClasse(utilisateurDto);
+        Filiere filiereBDD = this.filiereService.getOrCreate(filiere);
+        utilisateur.setFiliere(filiereBDD);
+        Utilisateur utilisateurBDD = utilisateurRepository.save(utilisateur);
+        return this.utilisateurMapper.toDTo(utilisateurBDD);
+
+    }
 
 
     @Override

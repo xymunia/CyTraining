@@ -32,7 +32,7 @@ public class UtilisateurController {
     @PostMapping(path = "inscrire",consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<UtilisateurDto> inscrire(@RequestBody UtilisateurDto utilisateurDto){
 
-        UtilisateurDto savedUtilisateur =this.utilisateurService.inscrire(utilisateurDto);
+        UtilisateurDto savedUtilisateur =this.utilisateurService.inscrire1(utilisateurDto);
         return new ResponseEntity<>(savedUtilisateur, HttpStatus.CREATED);
     }
 

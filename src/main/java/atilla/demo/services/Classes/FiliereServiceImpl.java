@@ -42,13 +42,14 @@ public class FiliereServiceImpl implements FiliereService {
         return this.filiereMapper.toDto(filiereSaved);
     }
 
-    @Override
-    public FiliereDto getOrCrete(FiliereDto filiereDto) {
-        Optional<Filiere> filiere = this.filiereRepository.findByNom(filiereDto.getNom());
-        if (filiere.isPresent()) {
-            return this.filiereMapper.toDto(filiere);
+
+    public Filiere getOrCreate(Filiere filiere) {
+        Optional<Filiere> filierePresente = this.filiereRepository.findByNom(filiere.getNom());
+        if (filierePresente.isPresent()) {
+            return filierePresente.get();
         } else {
-            return filiereRepository.save(filiere);
+            Filiere filiereSaved =  filiereRepository.save(filiere);
+            return filiereSaved;
         }
     }
 

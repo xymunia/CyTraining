@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 public interface FiliereService {
 
     FiliereDto ajouterFiliere (FiliereDto filiereDto);
-    FiliereDto getOrCrete (FiliereDto filiereDto);
+    Filiere getOrCreate (Filiere filiere);
     Stream<FiliereDto> afficherAll ();
 
     FiliereDto rechercherId ( int id );
