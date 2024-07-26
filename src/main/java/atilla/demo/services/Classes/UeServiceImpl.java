@@ -78,5 +78,10 @@ public class UeServiceImpl implements UeService {
         this.ueRepository.deleteById(id);
     }
 
+    @Override
+    public void modifierUe(int id, UeDto ueDto) {
+
+    }
+
 
 }

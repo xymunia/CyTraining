@@ -96,4 +96,9 @@ public class FiliereServiceImpl implements FiliereService {
 
         this.filiereRepository.deleteById(id);
     }
+
+    @Override
+    public void modifierFiliere(int id, FiliereDto filiereDto) {
+
+    }
 }

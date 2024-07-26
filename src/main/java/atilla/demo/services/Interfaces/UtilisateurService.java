@@ -22,6 +22,8 @@ public interface UtilisateurService {
 
     void deleteUtilsateur(int id);
 
+    void modifierUtilisateur ( int id , UtilisateurDto utilisateurDto);
+
 
 
 }

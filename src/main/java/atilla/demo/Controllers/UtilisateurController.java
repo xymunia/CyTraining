@@ -59,5 +59,11 @@ public class UtilisateurController {
 
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping( path = "/modification/{id}", consumes = APPLICATION_JSON_VALUE )
+    public void modifierUtilisateur ( @PathVariable int id , @RequestBody UtilisateurDto nvUtilisateur){
+        this.utilisateurService.modifierUtilisateur(id, nvUtilisateur);
+    }
+
 
 }

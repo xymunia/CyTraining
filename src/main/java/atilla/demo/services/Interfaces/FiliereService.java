@@ -16,5 +16,7 @@ public interface FiliereService {
 
     void deleteFiliere (int id);
 
+    void modifierFiliere( int id , FiliereDto filiereDto);
+
 
 }

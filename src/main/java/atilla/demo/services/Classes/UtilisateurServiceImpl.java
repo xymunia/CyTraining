@@ -89,4 +89,27 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         this.utilisateurRepository.deleteById(id);
 
     }
+
+    @Override
+    public void modifierUtilisateur(int id, UtilisateurDto utilisateurDto) {
+
+        UtilisateurDto utilisateurDtoBdd = rechercherId(id); // Cette méthode lance une exception si l'utilisateur n'est pas trouvé
+        Utilisateur utilisateurBDD = this.utilisateurMapper.toClasse(utilisateurDtoBdd);
+
+
+        utilisateurBDD.setMail(utilisateurDto.getEmail());
+       // utilisateurBDD.setMdp(utilisateurDto.getMdp());
+        utilisateurBDD.setNom(utilisateurDto.getNom());
+        utilisateurBDD.setPrenom(utilisateurDto.getPrenom());
+        utilisateurBDD.setNbQuestionsPropose(utilisateurDto.getNbQuestionsPropose());
+        utilisateurBDD.setNbQuestionsValide(utilisateurDto.getNbQuestionsValide());
+
+
+        if (utilisateurDto.getFiliere() != null) {
+            utilisateurBDD.setFiliere(utilisateurDto.getFiliere());
+        }
+
+        // Sauvegarder les modifications
+        this.utilisateurRepository.save(utilisateurBDD);
+    }
 }
