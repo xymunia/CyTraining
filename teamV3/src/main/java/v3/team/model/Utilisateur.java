@@ -68,7 +68,7 @@ public class Utilisateur {
 	@OneToMany(mappedBy = "createur")
 	@JsonBackReference
 	@Column(unique = true)
-	List<Question> questionsCertifiees = new ArrayList<>();
+	List<Question> questionsCreees = new ArrayList<>();
 
 	//Clé étrangère
 	/*
@@ -120,7 +120,7 @@ public class Utilisateur {
 	 *
 	 * @param id nécessaire pour les APIs
 	 */
-	public Utilisateur(int id, String prenom, String nom, String email, String mdp, ArrayList<Question> questionsCertifiees /*Filiere filiere, Taux taux, Revision revision*/)
+	public Utilisateur(int id, String prenom, String nom, String email, String mdp, ArrayList<Question> questionsCreees /*Filiere filiere, Taux taux, Revision revision*/)
 	{
 		this.id = id;
 		this.prenom = prenom;
@@ -131,7 +131,7 @@ public class Utilisateur {
 		this.nbQuestionsValides = 0;
 		//this.filiere = filiere;
 		//this.taux = taux;
-		this.questionsCertifiees = questionsCertifiees;
+		this.questionsCreees = questionsCreees;
 		//this.revision = revision;
 	}
 
@@ -141,7 +141,7 @@ public class Utilisateur {
 	 * Version CLI SQL natif
 	 * les ids sont générés automatiquement, inutile comme paramètre
 	 */
-	public Utilisateur(String prenom, String nom, String email, String mdp, ArrayList<Question> questionsCertifiees /*Filiere filiere, Taux taux, Revision revision*/)
+	public Utilisateur(String prenom, String nom, String email, String mdp, ArrayList<Question> questionsCreees /*Filiere filiere, Taux taux, Revision revision*/)
 	{
 		this.prenom = prenom;
 		this.nom = nom;
@@ -150,7 +150,7 @@ public class Utilisateur {
 		this.nbQuestionsProposees = 0;
 		this.nbQuestionsValides = 0;
 		//this.taux = taux;
-		this.questionsCertifiees = questionsCertifiees;
+		this.questionsCreees = questionsCreees;
 		//this.filiere = filiere;
 		//this.revision = revision;
 	}
@@ -212,13 +212,13 @@ public class Utilisateur {
 
 	public void setTaux(Taux taux) { this.taux = taux; }*/
 
-	public List<Question> getQuestionsCertifiees() {
-		return questionsCertifiees;
+	public List<Question> getQuestionsCreees() {
+		return questionsCreees;
 	}
 
 	public void addQuestion(Question q)
 	{
-		questionsCertifiees.add(q);
+		questionsCreees.add(q);
 		nbQuestionsProposees++;
 	}
 
@@ -231,7 +231,7 @@ public class Utilisateur {
 	public String toString() {
 		return "Utilisateur {" + "id = " + this.id + ", name = " + this.nom + ", email = " + this.email
 				+ "mot de passe = " + this.mdp + ", nbQuestionsProposees = " + this.nbQuestionsProposees
-				+ ", questionsCertifiees = " + this.questionsCertifiees + "}\n";
+				+ ", questionsCertifiees = " + this.questionsCreees + "}\n";
 	}
 
 	/*

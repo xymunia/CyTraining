@@ -1,10 +1,6 @@
 package v3.team.dtos;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import v3.team.model.Question;
 
 import java.util.ArrayList;
@@ -24,7 +20,7 @@ public class UtilisateurDto {
     int nbQuestionsProposees;
     int nbQuestionsValides;
     //Taux taux;
-    List<Question> questionsCertifiees;
+    List<Question> questionsCreees;
     //int nbQuestionsValide;
     //Filiere filiere;
     //Revision revision;
@@ -37,7 +33,7 @@ public class UtilisateurDto {
         this.mdp = mdp;
         this.nbQuestionsProposees = nbQuestionsProposees;
         this.nbQuestionsValides = nbQuestionsValides;
-        this.questionsCertifiees = new ArrayList<>();
+        this.questionsCreees = new ArrayList<>();
     }
 
     public UtilisateurDto() {}

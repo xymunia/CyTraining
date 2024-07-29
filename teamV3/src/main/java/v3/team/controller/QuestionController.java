@@ -26,12 +26,9 @@ public class QuestionController {
 	public QuestionController(QuestionService questionService){
 		this.questionService = questionService;
 	}
+	
 
-	/*@Autowired
-	UtilisateurService utilisateurService;*/
-
-
-	@PostMapping(consumes = APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/new", consumes = APPLICATION_JSON_VALUE)
 	public ResponseEntity<QuestionDto> newQuestion(@RequestBody QuestionDto request) {
 		try {
 			QuestionDto savedQuestion = questionService.createQuestion(request);
@@ -42,27 +39,25 @@ public class QuestionController {
 		}
 	}
 
-	@GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/infos/{id}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<QuestionDto> getQuestionById(@PathVariable("id") int qId) {
 		QuestionDto questionDto = questionService.getQuestionById(qId);
 		return ResponseEntity.ok(questionDto);
 	}
 
-	@GetMapping(consumes = APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/all", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<QuestionDto>> getAllQuestions() {
 		List<QuestionDto> questions = questionService.getAllQuestions();
 		return ResponseEntity.ok(questions);
 	}
 
-	//In postman : enter data in Body > raw and choose JSON format (in blue)
-	//Check JSON format
-	@PutMapping(path ="{id}", produces = APPLICATION_JSON_VALUE)
+	@PutMapping(path ="/modifier_question/{id}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<QuestionDto> updateQuestion(@PathVariable("id") int qId, @RequestBody QuestionDto updatedQuestion) {
 		QuestionDto questionDto = questionService.updateQuestion(qId, updatedQuestion);
 		return ResponseEntity.ok(questionDto);
 	}
 
-	@DeleteMapping(path ="{id}", consumes = APPLICATION_JSON_VALUE)
+	@DeleteMapping(path ="/supprimer/{id}")
 	public ResponseEntity<String> deleteQuestion(@PathVariable("id") int qId) {
 		questionService.deleteQuestion(qId);
 		return ResponseEntity.ok("Question deleted successfully.");

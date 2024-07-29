@@ -28,7 +28,7 @@ public class UtilisateurController {
     }
 
     //In postman : enter data in Body > raw and choose JSON format (in blue)
-    @PostMapping(consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/nouveau", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<UtilisateurDto> createUtilisateur(@RequestBody UtilisateurDto utilisateurDto) {
         try {
             UtilisateurDto savedUtilisateur = utilisateurService.createUtilisateur(utilisateurDto);
@@ -39,14 +39,14 @@ public class UtilisateurController {
     }
 
 
-    @GetMapping(path ="{id}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/profil/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UtilisateurDto> getUtilisateurById(@PathVariable("id") int uId) {
         UtilisateurDto utilisateurDto = utilisateurService.getUtilisateurById(uId);
         return ResponseEntity.ok(utilisateurDto);
     }
 
 
-    @GetMapping(produces = APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/tous", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<UtilisateurDto>> getAllUtilisateurs() {
         List<UtilisateurDto> utilisateurs = utilisateurService.getAllUtilisateurs();
         return ResponseEntity.ok(utilisateurs);
@@ -55,24 +55,29 @@ public class UtilisateurController {
 
     //In postman : enter data in Body > raw and choose JSON format (in blue)
     //Fields are inside ""
-    @PutMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/modifier/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UtilisateurDto> updateUtilisateur(@PathVariable("id") int uId, @RequestBody UtilisateurDto updatedUtilisateur) {
         UtilisateurDto utilisateurDto = utilisateurService.updateUtilisateur(uId, updatedUtilisateur);
         return ResponseEntity.ok(utilisateurDto);
     }
 
 
-    @DeleteMapping(path ="{id}", consumes = APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/supprimer/{id}")
     public ResponseEntity<String> deleteUtilisateur(@PathVariable("id") int uId) {
         utilisateurService.deleteUtilisateur(uId);
         return ResponseEntity.ok("Student deleted successfully.");
     }
 
-
-    /*@PostMapping("/{id}/question")
-    public ResponseEntity<UtilisateurDto> addQuestionToUser (@PathVariable("id") int uId, @RequestBody QuestionDto newQ) {
-        UtilisateurDto uCreateur = utilisateurService.addQuestionToUser(uId, newQ);
+    @PatchMapping(path = "/nouvelle_question/{id}")
+    public ResponseEntity<UtilisateurDto> newQuestionByUser (@PathVariable("id") int uId, @RequestBody QuestionDto newQ) {
+        UtilisateurDto uCreateur = utilisateurService.newQuestionByUser(uId, newQ);
         return ResponseEntity.ok(uCreateur);
-    }*/
+    }
+
+    @GetMapping(path = "/questions_creees/{id}")
+    public ResponseEntity<List<QuestionDto>> getCreatedQuestions(@PathVariable("id") int uId) {
+        List<QuestionDto> listeQuestions = utilisateurService.getCreatedQuestions(uId);
+        return ResponseEntity.ok(listeQuestions);
+    }
 
 }

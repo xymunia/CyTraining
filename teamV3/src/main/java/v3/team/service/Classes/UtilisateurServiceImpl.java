@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import v3.team.dtos.QuestionDto;
 import v3.team.dtos.UtilisateurDto;
 import v3.team.exceptions.ExceptionRessourceAbsente;
+import v3.team.mapper.Interfaces.QuestionMapperImpl;
 import v3.team.mapper.Interfaces.UtilisateurMapperImpl;
 import v3.team.model.Question;
 import v3.team.model.Utilisateur;
 
 import org.springframework.stereotype.Service;
+import v3.team.repositories.QuestionRepository;
 import v3.team.repositories.UtilisateurRepository;
 import v3.team.service.Interfaces.UtilisateurService;
 
@@ -29,14 +31,19 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     final UtilisateurMapperImpl uMap;
 
-    QuestionServiceImpl qServ;
+    QuestionRepository qRepo;
+
+    QuestionMapperImpl qMap;
 
     @PersistenceContext
     EntityManager em;
 
-    public UtilisateurServiceImpl(UtilisateurRepository uRepo, UtilisateurMapperImpl uMap) {
+    public UtilisateurServiceImpl(UtilisateurRepository uRepo, UtilisateurMapperImpl uMap, QuestionRepository qRepo,
+    QuestionMapperImpl qMap) {
         this.uRepo = uRepo;
         this.uMap = uMap;
+        this.qRepo = qRepo;
+        this.qMap = qMap;
     }
 
     //TODO : ajust controllers dto to table join
@@ -82,7 +89,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         u.setEmail(updatedUtilisateur.getEmail());
         u.setMdp(updatedUtilisateur.getMdp());
         //TODO : le nb de questions certifiées
-//        u.setQuestionsCertifiees(updatedUtilisateur.getQuestionsCertifiees());
+//        u.setQuestionsCertifiees(updatedUtilisateur.getQuestionsCreees());
         //
         Utilisateur updatedUtilisateurObj = uRepo.save(u);
 
@@ -98,32 +105,10 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         uRepo.deleteById(uId);
     }
 
-    /*@Override
-    public QuestionDto createQuestion(int uId, QuestionDto newQDto) {
-        Utilisateur u = uRepo.findById(uId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
-        );
-        Question newQ = QuestionMapper.mapToQuestion(newQDto);
-        qServ.
-        u.ajouterQuestion(newQ);
-    }*/
 
-
-    /*@Override
-    public List<QuestionDto> getCreatedQuestions(int uId) {
-        Utilisateur u = uRepo.findById(uId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
-        );
-
-        List<Question> questionsCrees = u.getQuestionsCertifiees();
-        return questionsCrees.stream().map((q) -> QuestionMapper.mapToQuestionDto(q))
-                .collect(Collectors.toList());
-    }*/
-
-
-    /*@Override
+    @Override
     @Transactional
-    public UtilisateurDto addQuestionToUser(int uId, QuestionDto qDto) {
+    public UtilisateurDto newQuestionByUser(int uId, QuestionDto qDto) {
         Utilisateur u = uRepo.findById(uId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
         );
@@ -131,14 +116,26 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         u.addQuestion(q);
         q.setCreateur(u);
         try {
+
             em.persist(q);
             em.merge(u);
+            return uMap.toDto(u);
 
-            return UtilisateurMapper.mapToUtilisateurDto(u);
         } catch (Exception e) {
             System.out.println("ERREUR CRÉATION D'1 QUESTION \n");
             throw new RuntimeException(e);
         }
-    }*/
+    }
+
+    @Override
+    public List<QuestionDto> getCreatedQuestions(int uId) {
+        Utilisateur u = uRepo.findById(uId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
+        );
+
+        List<Question> listeQuestions = u.getQuestionsCreees();
+        return listeQuestions.stream().map((q) -> qMap.toDto(q))
+                .collect(Collectors.toList());
+    }
 
 }
