@@ -12,7 +12,7 @@ import java.util.Objects;
 //TODO : définir manuellement constructeurs (avec/sans args), getters et setters
 @Entity
 @Table(name = "utilisateur")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "questionsCertifiees")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Utilisateur {
 
 	@Id
@@ -48,25 +48,15 @@ public class Utilisateur {
 
 	/**
 	 * Association : Un utilisateur peut créer plusieurs questions
-	 * Création DANS L'AUTRE TABLE (question) DE LA CLÉ ÉTRANGÈRE 'id_créateur'
-	 * Ce champ EST 'CACHÉ' : PAS DE questions_certifiées
 	 *
 	 * Utilisation : sélection dans la table question celles dont
 	 * id_créateur correspond à l'id de l'utilisateur connecté
 
 	 * Enfant / child / reference
 	 *
-	 * Une collection d'objets est obligatoire pour une instance qui peut-être liée à des instances d'une autre type
-	 * -> faire les méthodes d'ajout dans la liste
-	 * Tests :
-	 * - jointure en récup seulement les ids des questions (IMPOSSIBLE)
-	 * - jointure manuelle (OK)
 	 */
-	//TODO : MARCHE ENFIN (POST, GET (+ALL))
-	//TODO : mais ajout infinis dans createur + questionsCertifiees de Utilisateur
-	//TODO : AJOUTER LES METHODES D'AJOUT DE QUESTIONS, SUPPRESSION (whats'app : ultimate guide to jpa map associations)
 	@OneToMany(mappedBy = "createur")
-	@JsonBackReference
+	//@JsonBackReference
 	@Column(unique = true)
 	List<Question> questionsCreees = new ArrayList<>();
 

@@ -37,21 +37,9 @@ public class Question {
 	//TODO : uniD -> @ dans UNE DES DEUX ; nom clé étrangère = nom_autre_table_id
 	/**
 	 * Parent / owner
-	 *
-	 * Une collection d'objets est obligatoire pour une instance qui peut-être liée à des instances d'une autre type
-	 * -> faire les méthodes d'ajout dans la liste de questions
-	 * Tests :
-	 * - jointure en récup seulement les ids des questions (IMPOSSIBLE)
-	 * - jointure manuelle (OK)
 	 */
-	//ALL : toutes les cascades
-	//PERSIST : Création possible de question (hôte) même quand le créateur (champ de la référence) n'existe pas dans la BDD
-	//DETACH : question (ici hôte) est détachée de la bdd donc aucune modif possible de createur
-	//MERGE : les modifs de createur (champ de la réf) dans question (table hôte) sont prise en compte dans la table utilisateur (réf)
-	//REMOVE : supprimer une question (hôte) supprime un utilisateur (réf)
-	//REFRESH :
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JsonManagedReference
+	//@JsonManagedReference
 	@JoinColumn(name = "id_créateur")
 	Utilisateur createur;
 

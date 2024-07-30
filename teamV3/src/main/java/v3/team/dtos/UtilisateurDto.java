@@ -86,8 +86,8 @@ public class UtilisateurDto {
         return nbQuestionsProposees;
     }
 
-    public void setNbQuestionsPropose(int nbQuestionsPropose) {
-        this.nbQuestionsProposees = nbQuestionsPropose;
+    public void setNbQuestionsProposees(int nbQuestionsProposees) {
+        this.nbQuestionsProposees = nbQuestionsProposees;
     }
 
     public int getNbQuestionsValides() {
@@ -97,4 +97,8 @@ public class UtilisateurDto {
     public void setNbQuestionsValides(int nbQuestionsValide) {
         this.nbQuestionsValides = nbQuestionsValide;
     }
+
+    public List<Question> getQuestionsCreees() { return questionsCreees; }
+
+    public void setQuestionsCreees(List<Question> questionsCreees) { this.questionsCreees = questionsCreees; }
 }
