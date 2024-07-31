@@ -41,7 +41,7 @@ public class QuestionServiceImpl implements QuestionService {
         Question q = qRepo.findById(qId)
                 .orElseThrow(()
                         -> new ExceptionRessourceAbsente("Question data is not associated with given id "+qId+"\n"));
-
+        //System.out.println(q.toString());         Exemple d'affichage d'une question
         return qMap.toDto(q);
     }
 

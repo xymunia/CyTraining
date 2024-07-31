@@ -65,7 +65,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         Utilisateur u = uRepo.findById(uId)
                 .orElseThrow(()
                         -> new ExceptionRessourceAbsente("Utilisateur data is not associated with given id "+uId));
-
+        //System.out.println(u.toString());         Exemple d'affichage d'un user
         return uMap.toDto(u);
     }
 

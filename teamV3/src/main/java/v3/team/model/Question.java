@@ -118,6 +118,14 @@ public class Question {
 
 	public void setReponses(List<String> reponses) { this.reponses = reponses; }
 
+	public String infosQuestionsReponses() {
+		String reponsesCreees = "";
+		for (String reponse : reponses) {
+			reponsesCreees += reponse + " ,";
+		}
+		return "[" + reponsesCreees + "]";
+	}
+
 	public boolean repondre(int rep) { return rep == indBonneRep; }
 
 	/**
@@ -164,9 +172,9 @@ public class Question {
 
 	@Override
 	public String toString() {
-		return "Question {" + "id = " + this.id + ", question =' " + this.question + ", correction =' " + this.correction +
-				", réponses = " + this.reponses + "\n, indBonneRép = " + this.indBonneRep +", indice = " + this.indice +
-				", certifiee = " + this.certifiee + ", créateur = " + this.createur + "}\n";
+		return "Question {" + "id = " + id + ", question = " + question + ", correction = " + correction +
+				",\nréponses = " + this.infosQuestionsReponses() + ",\nindBonneRép = " + indBonneRep +", indice = " + indice +
+				", certifiee = " + certifiee + /*", créateur = " + createur.toString() +*/ "}\n";
 	}
 
     /*

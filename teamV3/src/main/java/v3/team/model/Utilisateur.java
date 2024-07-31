@@ -206,6 +206,16 @@ public class Utilisateur {
 		return questionsCreees;
 	}
 
+	public String userQuestionsInfo() {
+		String infosQuestions = "";
+		for (Question questionUser : questionsCreees) {
+			infosQuestions += questionUser.getQuestion() + ", " + questionUser.getCorrection() + ",\n" + questionUser.infosQuestionsReponses()
+					+ ",\n" + questionUser.getIndBonneRep() + ", " + questionUser.getIndice() + ", " + questionUser.getCertifiee() + ";\n";
+		}
+
+		return "{ " + infosQuestions + "}";
+	}
+
 	public void addQuestion(Question q)
 	{
 		questionsCreees.add(q);
@@ -219,9 +229,9 @@ public class Utilisateur {
 
 	@Override
 	public String toString() {
-		return "Utilisateur {" + "id = " + this.id + ", name = " + this.nom + ", email = " + this.email
-				+ "mot de passe = " + this.mdp + ", nbQuestionsProposees = " + this.nbQuestionsProposees
-				+ ", questionsCertifiees = " + this.questionsCreees + "}\n";
+		return "Utilisateur { " + "id = " + id + ", name = " + nom + ", email = " + email
+				+ "mot de passe = " + mdp + ", nbQuestionsProposees = " + nbQuestionsProposees
+				+ ",\nquestionsCreees = " + this.userQuestionsInfo() + " }\n";
 	}
 
 	/*
