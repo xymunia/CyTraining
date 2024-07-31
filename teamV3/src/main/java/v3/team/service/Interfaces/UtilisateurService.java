@@ -18,10 +18,12 @@ public interface UtilisateurService {
 
     UtilisateurDto updateUtilisateur(int uId, UtilisateurDto updatedUtilisateur);
 
-    void deleteUtilisateur(int uId);
-
     UtilisateurDto newQuestionByUser(int uId, QuestionDto qDto);
 
     List<QuestionDto> getCreatedQuestions(int uId);
+
+    QuestionDto updateQuestion(int uId, int qId, QuestionDto updatedQuestion);
+
+    void deleteUtilisateur(int uId);
 
 }

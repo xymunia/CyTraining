@@ -61,7 +61,6 @@ public class UtilisateurController {
         return ResponseEntity.ok(utilisateurDto);
     }
 
-
     @DeleteMapping(path = "/supprimer/{id}")
     public ResponseEntity<String> deleteUtilisateur(@PathVariable("id") int uId) {
         utilisateurService.deleteUtilisateur(uId);
@@ -78,6 +77,12 @@ public class UtilisateurController {
     public ResponseEntity<List<QuestionDto>> getCreatedQuestions(@PathVariable("id") int uId) {
         List<QuestionDto> listeQuestions = utilisateurService.getCreatedQuestions(uId);
         return ResponseEntity.ok(listeQuestions);
+    }
+
+    @PatchMapping("/modifier_question/{id_user}/{id_q}")
+    public ResponseEntity<QuestionDto> updateQuestionByUser (@PathVariable("id_user") int uId, @PathVariable("id_q") int qId, @RequestBody QuestionDto changedQ) {
+        QuestionDto questionModifiee = utilisateurService.updateQuestion(uId, qId, changedQ);
+        return ResponseEntity.ok(questionModifiee);
     }
 
 }

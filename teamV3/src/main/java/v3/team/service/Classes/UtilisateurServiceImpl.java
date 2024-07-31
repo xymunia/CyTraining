@@ -31,19 +31,19 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     final UtilisateurMapperImpl uMap;
 
-    QuestionRepository qRepo;
+    QuestionRepository qServRepo;
 
-    QuestionMapperImpl qMap;
+    QuestionMapperImpl qServMapper;
 
     @PersistenceContext
     EntityManager em;
 
-    public UtilisateurServiceImpl(UtilisateurRepository uRepo, UtilisateurMapperImpl uMap, QuestionRepository qRepo,
-    QuestionMapperImpl qMap) {
+    public UtilisateurServiceImpl(UtilisateurRepository uRepo, UtilisateurMapperImpl uMap, QuestionRepository qServRepo,
+    QuestionMapperImpl qServMapper) {
         this.uRepo = uRepo;
         this.uMap = uMap;
-        this.qRepo = qRepo;
-        this.qMap = qMap;
+        this.qServRepo = qServRepo;
+        this.qServMapper = qServMapper;
     }
 
     //TODO : ajust controllers dto to table join
@@ -97,22 +97,12 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
-    public void deleteUtilisateur(int uId) {
-        Utilisateur u = uRepo.findById(uId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
-        );
-        //
-        uRepo.deleteById(uId);
-    }
-
-
-    @Override
     @Transactional
     public UtilisateurDto newQuestionByUser(int uId, QuestionDto qDto) {
         Utilisateur u = uRepo.findById(uId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
         );
-        Question q = qMap.toClasse(qDto);
+        Question q = qServMapper.toClasse(qDto);
         u.addQuestion(q);
         q.setCreateur(u);
         try {
@@ -134,8 +124,69 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         );
 
         List<Question> listeQuestions = u.getQuestionsCreees();
-        return listeQuestions.stream().map((q) -> qMap.toDto(q))
+        return listeQuestions.stream().map((q) -> qServMapper.toDto(q))
                 .collect(Collectors.toList());
+    }
+
+
+    @Override
+    @Transactional
+    public QuestionDto updateQuestion(int uId, int qId, QuestionDto updatedQuestion) {
+        Utilisateur u = uRepo.findById(uId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
+        );
+        //Modifications dans la table des questions
+        Question updatedQuestionObj = null;
+        try {
+            Question q = qServRepo.findById(qId).orElseThrow(
+                    () -> new ExceptionRessourceAbsente("L'utilisateur n'a pas créé de question associée à l'id "+qId)
+            );
+            updatedQuestionObj = qServRepo.save(q);
+
+        } catch (ExceptionRessourceAbsente e) {
+            throw new RuntimeException(e);
+        }
+
+        //Modifications dans la liste des questions
+        try {
+            List<Question> questions = u.getQuestionsCreees();
+            for ( Question questionUser : questions ) {
+                if ( questionUser.getId() == qId ) {
+                    questionUser.setQuestion( updatedQuestion.getQuestion() );
+                    questionUser.setCorrection( updatedQuestion.getCorrection() );
+                    questionUser.setReponses( updatedQuestion.getReponses() );
+                    questionUser.setQuestion( updatedQuestion.getQuestion() );
+                    questionUser.setIndBonneRep( updatedQuestion.getIndBonneRep() );
+                    questionUser.setIndice( updatedQuestion.getIndice() );
+                    questionUser.setCertifiee( updatedQuestion.getCertifiee() );
+                }
+            }
+            uRepo.save(u);
+            return qServMapper.toDto(updatedQuestionObj);
+
+        } catch (Exception e) {
+            System.out.println("ERREUR MODIFICATION DE LA QUESTION D'ID " + qId + " DE L'UTILISATEUR " + uId +"\n");
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void deleteUtilisateur(int uId) {
+        Utilisateur u = uRepo.findById(uId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
+        );
+        try {
+            List<Question> effacerQuestions = u.getQuestionsCreees();
+            for (Question userQuestion : effacerQuestions) {
+                qServRepo.deleteById(userQuestion.getId());
+            }
+        } catch (Exception e) {
+            System.out.println("ERREUR SUPPRESSION DES QUESTIONS DE L'UTILISATEUR " + uId +"\n");
+            throw new RuntimeException(e);
+        }
+        uRepo.deleteById(uId);
     }
 
 }
