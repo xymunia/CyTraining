@@ -94,21 +94,21 @@ public class UtilisateurController {
     @PatchMapping(path = "/demande_validation/{id_user}/{id_q}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> askQuestionValidation(@PathVariable("id_user") int uId, @PathVariable("id_q") int qId) {
         utilisateurService.demandeValidation(uId, qId);
-        return ResponseEntity.ok("Demande de validation envoyée.");
+        return ResponseEntity.ok("Vérifiez l'état de validation avec un Get.");
     }
 
 
     @PatchMapping(path = "/valider_question/{id_user}/{id_q}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> acceptQuestion(@PathVariable("id_user") int uId, @PathVariable("id_q") int qId) {
         utilisateurService.validerQuestion(uId, qId);
-        return ResponseEntity.ok("Question validée ?");
+        return ResponseEntity.ok("Question validée ? Vérifiez avec un Get");
     }
 
 
     @PatchMapping(path = "/refuser_question/{id_user}/{id_q}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> refusQuestion(@PathVariable("id_user") int uId, @PathVariable("id_q") int qId) {
         utilisateurService.refusValidation(uId, qId);
-        return ResponseEntity.ok("Question refusée ?");
+        return ResponseEntity.ok("Question refusée ? Vérifiez avec un Get");
     }
 
 
