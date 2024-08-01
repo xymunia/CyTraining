@@ -135,18 +135,19 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         Utilisateur u = uRepo.findById(uId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
         );
+        //TODO : NOTE SOIR 31/07 -> AUCUN EFFET CAR AUCUN SETTER APPELE AUPARAVANT
         //Modifications dans la table des questions
         Question updatedQuestionObj = null;
         try {
             Question q = qServRepo.findById(qId).orElseThrow(
                     () -> new ExceptionRessourceAbsente("L'utilisateur n'a pas créé de question associée à l'id "+qId)
             );
-            updatedQuestionObj = qServRepo.save(q);
+            updatedQuestionObj = qServRepo.save(q);                  //TODO : Que se passait-il donc ici ?
 
         } catch (ExceptionRessourceAbsente e) {
             throw new RuntimeException(e);
         }
-
+        //TODO : NOTE SOIR 31/07 -> FAISAIT LE TAF CAR AUCUN SETTER DE QUESTION APPELE AUPARAVANT PLUS HAUT
         //Modifications dans la liste des questions
         try {
             List<Question> questions = u.getQuestionsCreees();
