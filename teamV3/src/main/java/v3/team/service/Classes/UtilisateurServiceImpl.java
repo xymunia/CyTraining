@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import v3.team.dtos.QuestionDto;
 import v3.team.dtos.UtilisateurDto;
+import v3.team.enumerations.EtatValidation;
 import v3.team.exceptions.ExceptionRessourceAbsente;
 import v3.team.mapper.Interfaces.QuestionMapperImpl;
 import v3.team.mapper.Interfaces.UtilisateurMapperImpl;
@@ -128,48 +129,122 @@ public class UtilisateurServiceImpl implements UtilisateurService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional
     public QuestionDto updateQuestion(int uId, int qId, QuestionDto updatedQuestion) {
         Utilisateur u = uRepo.findById(uId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
         );
-        //TODO : NOTE SOIR 31/07 -> AUCUN EFFET CAR AUCUN SETTER APPELE AUPARAVANT
         //Modifications dans la table des questions
         Question updatedQuestionObj = null;
         try {
             Question q = qServRepo.findById(qId).orElseThrow(
                     () -> new ExceptionRessourceAbsente("L'utilisateur n'a pas créé de question associée à l'id "+qId)
             );
-            updatedQuestionObj = qServRepo.save(q);                  //TODO : Que se passait-il donc ici ?
+            if ( !u.getQuestionsCreees().contains(q) ) {
+                System.out.println("L'utilisateur n'a pas créé la question associée à l'id "+qId+"\n");
+            } else {
+                q.setQuestion(updatedQuestion.getQuestion());
+                q.setCorrection(updatedQuestion.getCorrection());
+                q.setReponses(updatedQuestion.getReponses());
+                q.setIndBonneRep(updatedQuestion.getIndBonneRep());
+                q.setIndice(updatedQuestion.getIndice());
+                q.setCertifiee(updatedQuestion.getCertifiee());
+                updatedQuestionObj = qServRepo.save(q);
+
+                uRepo.save(u);
+            }
+            return qServMapper.toDto(updatedQuestionObj);
 
         } catch (ExceptionRessourceAbsente e) {
             throw new RuntimeException(e);
-        }
-        //TODO : NOTE SOIR 31/07 -> FAISAIT LE TAF CAR AUCUN SETTER DE QUESTION APPELE AUPARAVANT PLUS HAUT
-        //Modifications dans la liste des questions
-        try {
-            List<Question> questions = u.getQuestionsCreees();
-            for ( Question questionUser : questions ) {
-                if ( questionUser.getId() == qId ) {
-                    questionUser.setQuestion( updatedQuestion.getQuestion() );
-                    questionUser.setCorrection( updatedQuestion.getCorrection() );
-                    questionUser.setReponses( updatedQuestion.getReponses() );
-                    questionUser.setQuestion( updatedQuestion.getQuestion() );
-                    questionUser.setIndBonneRep( updatedQuestion.getIndBonneRep() );
-                    questionUser.setIndice( updatedQuestion.getIndice() );
-                    questionUser.setCertifiee( updatedQuestion.getCertifiee() );
-                }
-            }
-            uRepo.save(u);
-            return qServMapper.toDto(updatedQuestionObj);
 
         } catch (Exception e) {
-            System.out.println("ERREUR MODIFICATION DE LA QUESTION D'ID " + qId + " DE L'UTILISATEUR " + uId +"\n");
+            System.out.println("ERREUR MODIFICATION DE LA QUESTION D'ID " + qId + " PAR L'UTILISATEUR " + uId +"\n");
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    @Transactional
+    public void demandeValidation(int uId, int qId) {
+        Utilisateur u = uRepo.findById(uId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
+        );
+        Question q = qServRepo.findById(qId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
+        );
+        if ( !u.getQuestionsCreees().contains(q) ) {
+            System.out.println("Validation Impossible! Vous n'avez pas créé cette question \n");
+        } else if ( q.getEtatValidation().equals(EtatValidation.NON_PROPOSEE.getValeurEtat())
+                || q.getEtatValidation().equals(EtatValidation.REFUSEE.getValeurEtat()) ) {
+            q.setEtatValidation(EtatValidation.EN_ATTENTE.getValeurEtat());
+            qServRepo.save(q);
+            uRepo.save(u);
+        }
+    }
+
+    @Override
+    @Transactional
+    public QuestionDto validerQuestion(int uId, int qId) {
+        Utilisateur u = uRepo.findById(uId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
+        );
+        Question q = qServRepo.findById(qId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
+        );
+        Question updatedQuestionObj = q;
+        if ( u.getQuestionsCreees().contains(q) && q.getEtatValidation().equals(EtatValidation.EN_ATTENTE.getValeurEtat()) ) {
+            q.setEtatValidation(EtatValidation.VALIDEE.getValeurEtat());
+            q.setCertifiee(1);
+            updatedQuestionObj = qServRepo.save(q);
+            uRepo.save(u);
+        } else {
+            System.out.println("La question n'a pas été mise en attente de validation\n");
+        }
+        return qServMapper.toDto(updatedQuestionObj);
+    }
+
+    @Override
+    @Transactional
+    public QuestionDto refusValidation(int uId, int qId) {
+        Utilisateur u = uRepo.findById(uId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
+        );
+        Question q = qServRepo.findById(qId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
+        );
+        Question updatedQuestionObj = q;
+        if ( u.getQuestionsCreees().contains(q) && q.getEtatValidation().equals(EtatValidation.EN_ATTENTE.getValeurEtat()) ) {
+            q.setEtatValidation(EtatValidation.REFUSEE.getValeurEtat());
+            updatedQuestionObj = qServRepo.save(q);
+            uRepo.save(u);
+        } else {
+            System.out.println("La question n'a pas été mise en attente de validation\n");
+        }
+        return qServMapper.toDto(updatedQuestionObj);
+    }
+
+    @Override
+    @Transactional
+    public void deleteQuestion(int uId, int qId) {
+        Utilisateur u = uRepo.findById(uId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
+        );
+        Question q = qServRepo.findById(qId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
+        );
+        if ( !u.getQuestionsCreees().contains(q) ) {
+            System.out.println("Suppression Impossible! Vous n'avez pas créé cette question \n");
+        }
+        else if ( !q.getEtatValidation().equals(EtatValidation.VALIDEE.getValeurEtat()) ) {
+            qServRepo.deleteById(qId);
+            uRepo.save(u);
+            System.out.println("Suppression réussie \n");
+        } else {
+            System.out.println("Suppression impossible! La question est déjà validée \n");
+        }
     }
 
     @Override

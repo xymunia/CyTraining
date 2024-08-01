@@ -1,6 +1,7 @@
 package v3.team.dtos;
 
 import lombok.*;
+import v3.team.enumerations.EtatValidation;
 import v3.team.model.Utilisateur;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public class QuestionDto {
 
     String indice;
 
+    String etatValidation;
+
     int certifiee;
 
     Utilisateur createur;
@@ -37,12 +40,12 @@ public class QuestionDto {
         this.reponses = reponses;
         this.indBonneRep = indBonneRep;
         this.indice = indice;
+        EtatValidation.NON_PROPOSEE.getValeurEtat();
         this.certifiee = 0;
         this.createur = createur;
     }
 
     public QuestionDto() {}
-
 
     public int getId() { return id; }
 
@@ -67,6 +70,10 @@ public class QuestionDto {
     public String getIndice() { return indice; }
 
     public void setIndice(String indice) { this.indice = indice; }
+
+    public String getEtatValidation() { return etatValidation; }
+
+    public void setEtatValidation(String etat) { etatValidation = etat; }
 
     public int getCertifiee() { return certifiee; }
 

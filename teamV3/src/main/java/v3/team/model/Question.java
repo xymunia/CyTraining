@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import v3.team.enumerations.EtatValidation;
 
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class Question {
 	int indBonneRep;
 
 	String indice;
+
+	@Column(name = "état_validation")
+	String etatValidation;
 
 	@Column(name = "validation")
 	int certifiee;
@@ -65,6 +69,7 @@ public class Question {
 		this.reponses = reponses;
 		this.indBonneRep = indBonneRep;
 		this.indice = indice;
+		this.etatValidation = EtatValidation.NON_PROPOSEE.getValeurEtat();
 		this.certifiee = 0;
 		this.createur = createur;
 		//this.chapitre = chapitre;
@@ -81,6 +86,7 @@ public class Question {
 		this.reponses = reponses;
 		this.indBonneRep = indBonneRep;
 		this.indice = indice;
+		this.etatValidation = EtatValidation.NON_PROPOSEE.getValeurEtat();
 		this.certifiee = 0;
 		this.createur = createur;
 		//this.chapitre = chapitre;
@@ -157,6 +163,10 @@ public class Question {
 
 	public void setIndice(String indice) {this.indice = indice;}
 
+	public String getEtatValidation() { return etatValidation; }
+
+	public void setEtatValidation(String etat) { etatValidation = etat; }
+
 	public int getCertifiee() {
 		return certifiee;
 	}
@@ -174,7 +184,7 @@ public class Question {
 	public String toString() {
 		return "Question {" + "id = " + id + ", question = " + question + ", correction = " + correction +
 				",\nréponses = " + this.infosQuestionsReponses() + ",\nindBonneRép = " + indBonneRep +", indice = " + indice +
-				", certifiee = " + certifiee + /*", créateur = " + createur.toString() +*/ "}\n";
+				", état = " + this.etatValidation + ", certifiee = " + certifiee + /*", créateur = " + createur.toString() +*/ "}\n";
 	}
 
     /*

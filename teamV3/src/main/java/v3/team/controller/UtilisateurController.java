@@ -61,28 +61,61 @@ public class UtilisateurController {
         return ResponseEntity.ok(utilisateurDto);
     }
 
+
     @DeleteMapping(path = "/supprimer/{id}")
     public ResponseEntity<String> deleteUtilisateur(@PathVariable("id") int uId) {
         utilisateurService.deleteUtilisateur(uId);
         return ResponseEntity.ok("Student deleted successfully.");
     }
 
-    @PatchMapping(path = "/nouvelle_question/{id}")
+
+    @PatchMapping(path = "/nouvelle_question/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UtilisateurDto> newQuestionByUser (@PathVariable("id") int uId, @RequestBody QuestionDto newQ) {
         UtilisateurDto uCreateur = utilisateurService.newQuestionByUser(uId, newQ);
         return ResponseEntity.ok(uCreateur);
     }
 
-    @GetMapping(path = "/questions_creees/{id}")
+
+    @GetMapping(path = "/questions_creees/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<QuestionDto>> getCreatedQuestions(@PathVariable("id") int uId) {
         List<QuestionDto> listeQuestions = utilisateurService.getCreatedQuestions(uId);
         return ResponseEntity.ok(listeQuestions);
     }
 
-    @PatchMapping("/modifier_question/{id_user}/{id_q}")
-    public ResponseEntity<QuestionDto> updateQuestionByUser (@PathVariable("id_user") int uId, @PathVariable("id_q") int qId, @RequestBody QuestionDto changedQ) {
+
+    @PatchMapping(path = "/modifier_question/{id_user}/{id_q}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<QuestionDto> updateQuestionByUser (@PathVariable("id_user") int uId, @PathVariable("id_q") int qId,
+    @RequestBody QuestionDto changedQ) {
         QuestionDto questionModifiee = utilisateurService.updateQuestion(uId, qId, changedQ);
         return ResponseEntity.ok(questionModifiee);
+    }
+
+
+    @PatchMapping(path = "/demande_validation/{id_user}/{id_q}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> askQuestionValidation(@PathVariable("id_user") int uId, @PathVariable("id_q") int qId) {
+        utilisateurService.demandeValidation(uId, qId);
+        return ResponseEntity.ok("Demande de validation envoyée.");
+    }
+
+
+    @PatchMapping(path = "/valider_question/{id_user}/{id_q}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> acceptQuestion(@PathVariable("id_user") int uId, @PathVariable("id_q") int qId) {
+        utilisateurService.validerQuestion(uId, qId);
+        return ResponseEntity.ok("Question validée ?");
+    }
+
+
+    @PatchMapping(path = "/refuser_question/{id_user}/{id_q}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> refusQuestion(@PathVariable("id_user") int uId, @PathVariable("id_q") int qId) {
+        utilisateurService.refusValidation(uId, qId);
+        return ResponseEntity.ok("Question refusée ?");
+    }
+
+
+    @PatchMapping(path = "/supprimer_question/{id_user}/{id_q}")
+    public ResponseEntity<String> deleteQuestionUser(@PathVariable("id_user") int uId, @PathVariable("id_q") int qId) {
+        utilisateurService.deleteQuestion(uId, qId);
+        return ResponseEntity.ok("Question deleted successfully.");
     }
 
 }

@@ -12,6 +12,7 @@ public interface QuestionMapper {
     @Mapping(source="correction", target = "correction")
     @Mapping(source = "indBonneRep",target = "indBonneRep")
     @Mapping(source = "indice",target = "indice")
+    @Mapping(source = "etatValidation", target = "etatValidation")
     @Mapping(source = "certifiee",target = "certifiee")
     QuestionDto toDto(Question question);
 
@@ -19,6 +20,7 @@ public interface QuestionMapper {
     @Mapping(source="correction", target = "correction")
     @Mapping(source = "indBonneRep",target = "indBonneRep")
     @Mapping(source = "indice",target = "indice")
+    @Mapping(source = "etatValidation", target = "etatValidation")
     @Mapping(source = "certifiee",target = "certifiee")
     Question toClasse (QuestionDto utilisateurDto);
 }
