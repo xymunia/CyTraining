@@ -26,10 +26,6 @@ public interface UtilisateurService {
 
     void demandeValidation(int uId, int qId);
 
-    QuestionDto validerQuestion(int uId, int qId);
-
-    QuestionDto refusValidation(int uId, int qId);
-
     void deleteQuestion(int uId, int qId);
 
     void deleteUtilisateur(int uId);

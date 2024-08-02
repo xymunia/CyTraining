@@ -39,6 +39,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     @PersistenceContext
     EntityManager em;
 
+
     public UtilisateurServiceImpl(UtilisateurRepository uRepo, UtilisateurMapperImpl uMap, QuestionRepository qServRepo,
     QuestionMapperImpl qServMapper) {
         this.uRepo = uRepo;
@@ -47,11 +48,9 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         this.qServMapper = qServMapper;
     }
 
-    //TODO : ajust controllers dto to table join
-
     @Override
     public UtilisateurDto createUtilisateur(UtilisateurDto uDto) {
-        try {
+        try{
             Utilisateur u = uMap.toClasse(uDto);
             Utilisateur savedUtilisateur = uRepo.save(u);
             return uMap.toDto(savedUtilisateur);
@@ -62,7 +61,8 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
-    public UtilisateurDto getUtilisateurById(int uId) {
+    public UtilisateurDto getUtilisateurById(int uId)
+    {
         Utilisateur u = uRepo.findById(uId)
                 .orElseThrow(()
                         -> new ExceptionRessourceAbsente("Utilisateur data is not associated with given id "+uId));
@@ -71,16 +71,18 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
-    public List<UtilisateurDto> getAllUtilisateurs() {
+    public List<UtilisateurDto> getAllUtilisateurs()
+    {
         List<Utilisateur> utilisateurs = uRepo.findAll();
         //First map all the corresponding users DTO, then convert to a list
         return utilisateurs.stream().map((u) -> uMap.toDto(u))
                 .collect(Collectors.toList());
     }
 
-    //TODO : ajust so that updating personal data only (no performance data can be updated)
     @Override
-    public UtilisateurDto updateUtilisateur(int uId, UtilisateurDto updatedUtilisateur) {
+    @Transactional
+    public UtilisateurDto updateUtilisateur(int uId, UtilisateurDto updatedUtilisateur)
+    {
         Utilisateur u = uRepo.findById(uId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
         );
@@ -89,9 +91,6 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         u.setNom(updatedUtilisateur.getNom());
         u.setEmail(updatedUtilisateur.getEmail());
         u.setMdp(updatedUtilisateur.getMdp());
-        //TODO : le nb de questions certifiées
-//        u.setQuestionsCertifiees(updatedUtilisateur.getQuestionsCreees());
-        //
         Utilisateur updatedUtilisateurObj = uRepo.save(u);
 
         return uMap.toDto(updatedUtilisateurObj);
@@ -99,17 +98,20 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Override
     @Transactional
-    public UtilisateurDto newQuestionByUser(int uId, QuestionDto qDto) {
+    public UtilisateurDto newQuestionByUser(int uId, QuestionDto qDto)
+    {
         Utilisateur u = uRepo.findById(uId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
         );
         Question q = qServMapper.toClasse(qDto);
+        //Setting validation state manually since the mapper class won't allow overwriting
+        q.setEtatValidation(EtatValidation.NON_PROPOSEE.getValeurEtat());
         u.addQuestion(q);
         q.setCreateur(u);
         try {
-
-            em.persist(q);
-            em.merge(u);
+            //Updating repositories
+            qServRepo.save(q);
+            /*System.out.println(q.getCreateur().toString());        Exemple d'affichage */
             return uMap.toDto(u);
 
         } catch (Exception e) {
@@ -119,7 +121,8 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
-    public List<QuestionDto> getCreatedQuestions(int uId) {
+    public List<QuestionDto> getCreatedQuestions(int uId)
+    {
         Utilisateur u = uRepo.findById(uId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
         );
@@ -131,28 +134,33 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Override
     @Transactional
-    public QuestionDto updateQuestion(int uId, int qId, QuestionDto updatedQuestion) {
-        Utilisateur u = uRepo.findById(uId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
-        );
-        //Modifications dans la table des questions
+    public QuestionDto updateQuestion(int uId, int qId, QuestionDto updatedQuestion)
+    {
         Question updatedQuestionObj = null;
         try {
             Question q = qServRepo.findById(qId).orElseThrow(
                     () -> new ExceptionRessourceAbsente("L'utilisateur n'a pas créé de question associée à l'id "+qId)
             );
-            if ( !u.getQuestionsCreees().contains(q) ) {
+            Utilisateur u = q.getCreateur();
+            //For tests purposes
+            if ( u.getId() != uId ) {
                 System.out.println("L'utilisateur n'a pas créé la question associée à l'id "+qId+"\n");
             } else {
-                q.setQuestion(updatedQuestion.getQuestion());
-                q.setCorrection(updatedQuestion.getCorrection());
-                q.setReponses(updatedQuestion.getReponses());
-                q.setIndBonneRep(updatedQuestion.getIndBonneRep());
-                q.setIndice(updatedQuestion.getIndice());
-                q.setCertifiee(updatedQuestion.getCertifiee());
-                updatedQuestionObj = qServRepo.save(q);
+                //Allow creator to modify a question that's neither waiting nor validated
+                if ( q.getEtatValidation().equals( EtatValidation.NON_PROPOSEE.getValeurEtat() )
+                        || q.getEtatValidation().equals(EtatValidation.REFUSEE.getValeurEtat()) ) {
 
-                uRepo.save(u);
+                    q.setQuestion(updatedQuestion.getQuestion());
+                    q.setCorrection(updatedQuestion.getCorrection());
+                    q.setReponses(updatedQuestion.getReponses());
+                    q.setIndBonneRep(updatedQuestion.getIndBonneRep());
+                    q.setIndice(updatedQuestion.getIndice());
+                    updatedQuestionObj = qServRepo.save(q);
+                    //No need to save changes to creator thanks to the cascading of the JPA relationship
+
+                } else {
+                    System.out.println("Vous devez attendre l'action d'un admin pour modifier.\n");
+                }
             }
             return qServMapper.toDto(updatedQuestionObj);
 
@@ -160,7 +168,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             throw new RuntimeException(e);
 
         } catch (Exception e) {
-            System.out.println("ERREUR MODIFICATION DE LA QUESTION D'ID " + qId + " PAR L'UTILISATEUR " + uId +"\n");
+            System.out.println("ERREUR MODIFICATION DE LA QUESTION D'ID " + qId + " DE L'UTILISATEUR " + uId +"\n");
             throw new RuntimeException(e);
         }
 
@@ -168,14 +176,14 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Override
     @Transactional
-    public void demandeValidation(int uId, int qId) {
-        Utilisateur u = uRepo.findById(uId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
-        );
+    public void demandeValidation(int uId, int qId)
+    {
         Question q = qServRepo.findById(qId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
         );
-        if ( !u.getQuestionsCreees().contains(q) ) {
+        Utilisateur u = q.getCreateur();
+        //For tests purposes
+        if ( u.getId() != uId ) {
             System.out.println("Validation Impossible! Vous n'avez pas créé cette question \n");
         } else if ( q.getEtatValidation().equals(EtatValidation.NON_PROPOSEE.getValeurEtat())
                 || q.getEtatValidation().equals(EtatValidation.REFUSEE.getValeurEtat()) ) {
@@ -185,57 +193,17 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         }
     }
 
-    @Override
-    @Transactional
-    public QuestionDto validerQuestion(int uId, int qId) {
-        Utilisateur u = uRepo.findById(uId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
-        );
-        Question q = qServRepo.findById(qId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
-        );
-        Question updatedQuestionObj = q;
-        if ( u.getQuestionsCreees().contains(q) && q.getEtatValidation().equals(EtatValidation.EN_ATTENTE.getValeurEtat()) ) {
-            q.setEtatValidation(EtatValidation.VALIDEE.getValeurEtat());
-            q.setCertifiee(1);
-            updatedQuestionObj = qServRepo.save(q);
-            uRepo.save(u);
-        } else {
-            System.out.println("La question n'a pas été mise en attente de validation\n");
-        }
-        return qServMapper.toDto(updatedQuestionObj);
-    }
 
     @Override
     @Transactional
-    public QuestionDto refusValidation(int uId, int qId) {
-        Utilisateur u = uRepo.findById(uId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
-        );
+    public void deleteQuestion(int uId, int qId)
+    {
         Question q = qServRepo.findById(qId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
         );
-        Question updatedQuestionObj = q;
-        if ( u.getQuestionsCreees().contains(q) && q.getEtatValidation().equals(EtatValidation.EN_ATTENTE.getValeurEtat()) ) {
-            q.setEtatValidation(EtatValidation.REFUSEE.getValeurEtat());
-            updatedQuestionObj = qServRepo.save(q);
-            uRepo.save(u);
-        } else {
-            System.out.println("La question n'a pas été mise en attente de validation\n");
-        }
-        return qServMapper.toDto(updatedQuestionObj);
-    }
-
-    @Override
-    @Transactional
-    public void deleteQuestion(int uId, int qId) {
-        Utilisateur u = uRepo.findById(uId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
-        );
-        Question q = qServRepo.findById(qId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
-        );
-        if ( !u.getQuestionsCreees().contains(q) ) {
+        Utilisateur u = q.getCreateur();
+        //For tests purposes
+        if ( u.getId() != uId ) {
             System.out.println("Suppression Impossible! Vous n'avez pas créé cette question \n");
         }
         else if ( !q.getEtatValidation().equals(EtatValidation.VALIDEE.getValeurEtat()) ) {
@@ -249,14 +217,21 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Override
     @Transactional
-    public void deleteUtilisateur(int uId) {
+    public void deleteUtilisateur(int uId)
+    {
         Utilisateur u = uRepo.findById(uId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
         );
         try {
             List<Question> effacerQuestions = u.getQuestionsCreees();
             for (Question userQuestion : effacerQuestions) {
-                qServRepo.deleteById(userQuestion.getId());
+                //Validated questions remain accessible to everyone during revisions
+                if ( userQuestion.getEtatValidation().equals( EtatValidation.VALIDEE.getValeurEtat() )) {
+                    userQuestion.setCreateur(null);
+                    qServRepo.save(userQuestion);
+                } else {
+                    qServRepo.deleteById(userQuestion.getId());
+                }
             }
         } catch (Exception e) {
             System.out.println("ERREUR SUPPRESSION DES QUESTIONS DE L'UTILISATEUR " + uId +"\n");
