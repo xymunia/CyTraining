@@ -90,12 +90,17 @@ public class QuestionServiceImpl implements QuestionService {
         if ( q.getEtatValidation().equals(EtatValidation.EN_ATTENTE.getValeurEtat()) ) {
             q.setEtatValidation(EtatValidation.VALIDEE.getValeurEtat());
             q.setCertifiee(1);
+            //Update number of validated questions for existing creators
+            if ( !Objects.equals(q.getCreateur(), null) ) {
+                q.getCreateur().setNbQuestionsValides( q.getCreateur().getNbQuestionsValides() + 1 );
+            }
             updatedQuestionObj = qRepo.save(q);
             //No need to save changes to creator thanks to the JPA relationship cascading
         } else {
             System.out.println("La question n'a pas été mise en attente de validation\n");
         }
         return qMap.toDto(updatedQuestionObj);
+
     }
 
     //TODO : ADMIN
@@ -113,6 +118,10 @@ public class QuestionServiceImpl implements QuestionService {
         }
         else {
             q.setEtatValidation(EtatValidation.REFUSEE.getValeurEtat());
+            //Update number of validated questions for existing creators that have already tried to contribute
+            if ( !Objects.equals(q.getCreateur(), null) && q.getCreateur().getNbQuestionsValides() > 0 ) {
+                q.getCreateur().setNbQuestionsValides( q.getCreateur().getNbQuestionsValides() - 1 );
+            }
             updatedQuestionObj = qRepo.save(q);
             //No need to save changes to creator thanks to the cascading of the JPA relationship
         }
@@ -132,6 +141,10 @@ public class QuestionServiceImpl implements QuestionService {
         if ( q.getEtatValidation().equals(EtatValidation.VALIDEE.getValeurEtat()) ) {
             q.setEtatValidation( EtatValidation.EN_ATTENTE.getValeurEtat() );
             q.setCertifiee(0);
+            //Update number of validated questions for existing creators that have already tried to contribute
+            if ( !Objects.equals(q.getCreateur(), null) && q.getCreateur().getNbQuestionsValides() > 0 ) {
+                q.getCreateur().setNbQuestionsValides( q.getCreateur().getNbQuestionsValides() - 1 );
+            }
             updatedQuestionObj = qRepo.save(q);
             //No need to save changes to creator thanks to the cascading of the JPA relationship
             return qMap.toDto(updatedQuestionObj);
