@@ -17,6 +17,12 @@ public interface QuestionService {
 
     QuestionDto updateQuestion(int qId, QuestionDto updatedQuestion);
 
+    QuestionDto validerQuestion(int qId);
+
+    QuestionDto refusValidation(int qId);
+
+    QuestionDto remiseAttente(int qId);
+
     void deleteQuestion(int qId);
 
 

@@ -39,11 +39,13 @@ public class QuestionController {
 		}
 	}
 
+
 	@GetMapping(path = "/infos/{id}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<QuestionDto> getQuestionById(@PathVariable("id") int qId) {
 		QuestionDto questionDto = questionService.getQuestionById(qId);
 		return ResponseEntity.ok(questionDto);
 	}
+
 
 	@GetMapping(path = "/all", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<QuestionDto>> getAllQuestions() {
@@ -51,16 +53,39 @@ public class QuestionController {
 		return ResponseEntity.ok(questions);
 	}
 
+
 	@PatchMapping(path ="/modifier_question/{id}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<QuestionDto> updateQuestion(@PathVariable("id") int qId, @RequestBody QuestionDto updatedQuestion) {
 		QuestionDto questionDto = questionService.updateQuestion(qId, updatedQuestion);
 		return ResponseEntity.ok(questionDto);
 	}
 
+
+	@PatchMapping(path = "/valider_question/{id_q}", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> acceptQuestion(@PathVariable("id_q") int qId) {
+		questionService.validerQuestion(qId);
+		return ResponseEntity.ok("Question validée ? Vérifiez avec un Get");
+	}
+
+
+	@PatchMapping(path = "/refuser_question/{id_q}", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> refusQuestion(@PathVariable("id_q") int qId) {
+		questionService.refusValidation(qId);
+		return ResponseEntity.ok("Question refusée ? Vérifiez avec un Get");
+	}
+
+
+	@PatchMapping(path = "/remise_attente/{id_q}", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<QuestionDto> remiseAttente(@PathVariable("id_q") int qId) {
+		QuestionDto questionAtt = questionService.remiseAttente(qId);
+		return ResponseEntity.ok(questionAtt);
+	}
+
+
 	@DeleteMapping(path ="/supprimer/{id}")
 	public ResponseEntity<String> deleteQuestion(@PathVariable("id") int qId) {
 		questionService.deleteQuestion(qId);
-		return ResponseEntity.ok("Question deleted successfully.");
+		return ResponseEntity.ok("Vérifiez la suppression avec un Get ou dans le CLI");
 	}
 
 }

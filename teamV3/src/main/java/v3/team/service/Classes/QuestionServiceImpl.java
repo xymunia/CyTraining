@@ -1,12 +1,15 @@
 package v3.team.service.Classes;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import v3.team.dtos.QuestionDto;
+import v3.team.enumerations.EtatValidation;
 import v3.team.exceptions.ExceptionRessourceAbsente;
 import v3.team.mapper.Interfaces.QuestionMapperImpl;
 import v3.team.model.Question;
@@ -28,7 +31,9 @@ public class QuestionServiceImpl implements QuestionService {
         this.qMap = qMap;
     }
 
+    //TODO : validation immédiate pour des questions créées par des admins
     @Override
+    @Transactional
     public QuestionDto createQuestion(QuestionDto qDto) {
         Question q = qMap.toClasse(qDto);
         System.out.println(q.getCreateur());
@@ -36,6 +41,7 @@ public class QuestionServiceImpl implements QuestionService {
         return qMap.toDto(savedQuestion);
     }
 
+    //TODO : ADMIN
     @Override
     public QuestionDto getQuestionById(int qId) {
         Question q = qRepo.findById(qId)
@@ -45,6 +51,7 @@ public class QuestionServiceImpl implements QuestionService {
         return qMap.toDto(q);
     }
 
+    //TODO : ADMIN + accès aux questions validées ou en attente uniquement
     @Override
     public List<QuestionDto> getAllQuestions() {
         List<Question> questions = qRepo.findAll();
@@ -53,7 +60,9 @@ public class QuestionServiceImpl implements QuestionService {
                 .collect(Collectors.toList());
     }
 
+    //TODO : ADMIN
     @Override
+    @Transactional
     public QuestionDto updateQuestion(int qId, QuestionDto updatedQuestion) {
         Question q = qRepo.findById(qId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId+"\n")
@@ -63,52 +72,89 @@ public class QuestionServiceImpl implements QuestionService {
         q.setReponses(updatedQuestion.getReponses());
         q.setIndBonneRep(updatedQuestion.getIndBonneRep());
         q.setIndice(updatedQuestion.getIndice());
-        q.setCertifiee(updatedQuestion.getCertifiee());
-        q.setCreateur(updatedQuestion.getCreateur());
+
         Question updatedQuestionObj = qRepo.save(q);
 
         return qMap.toDto(updatedQuestionObj);
     }
 
+    //TODO : ADMIN
+    @Override
+    @Transactional
+    public QuestionDto validerQuestion(int qId) {
+
+        Question q = qRepo.findById(qId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
+        );
+        Question updatedQuestionObj = q;
+        if ( q.getEtatValidation().equals(EtatValidation.EN_ATTENTE.getValeurEtat()) ) {
+            q.setEtatValidation(EtatValidation.VALIDEE.getValeurEtat());
+            q.setCertifiee(1);
+            updatedQuestionObj = qRepo.save(q);
+            //No need to save changes to creator thanks to the JPA relationship cascading
+        } else {
+            System.out.println("La question n'a pas été mise en attente de validation\n");
+        }
+        return qMap.toDto(updatedQuestionObj);
+    }
+
+    //TODO : ADMIN
+    @Override
+    @Transactional
+    public QuestionDto refusValidation(int qId) {
+
+        Question q = qRepo.findById(qId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
+        );
+
+        Question updatedQuestionObj = q;
+        if ( !q.getEtatValidation().equals(EtatValidation.EN_ATTENTE.getValeurEtat()) ) {
+            System.out.println("La question n'a pas été mise en attente de validation\n");
+        }
+        else {
+            q.setEtatValidation(EtatValidation.REFUSEE.getValeurEtat());
+            updatedQuestionObj = qRepo.save(q);
+            //No need to save changes to creator thanks to the cascading of the JPA relationship
+        }
+        return qMap.toDto(updatedQuestionObj);
+
+    }
+
+    //TODO : ADMIN
+    @Override
+    @Transactional
+    public QuestionDto remiseAttente(int qId) {
+
+        Question q = qRepo.findById(qId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
+        );
+        Question updatedQuestionObj = q;
+        if ( q.getEtatValidation().equals(EtatValidation.VALIDEE.getValeurEtat()) ) {
+            q.setEtatValidation( EtatValidation.EN_ATTENTE.getValeurEtat() );
+            q.setCertifiee(0);
+            updatedQuestionObj = qRepo.save(q);
+            //No need to save changes to creator thanks to the cascading of the JPA relationship
+            return qMap.toDto(updatedQuestionObj);
+        }
+
+        return qMap.toDto(updatedQuestionObj);
+    }
+
+    //TODO : ADMIN
     @Override
     public void deleteQuestion(int qId) {
         Question q = qRepo.findById(qId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId+"\n")
+                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
         );
-        //
-        qRepo.deleteById(qId);
+
+        if ( Objects.equals(q.getCreateur(), null) ) {
+            qRepo.deleteById(qId);
+            System.out.println("Question was deleted successfully.\n");
+        } else {
+            System.out.println("SVP ne soyez pas brutal envers le créateur de la question.\n");
+        };
     }
 
-
-
-/*
-
-    //TODO : ajust questionService
-    @Override
-    public QuestionDto createQuestion(QuestionDto qDto) {
-        return null;
-    }
-
-    @Override
-    public QuestionDto getQuestionById(int qId) {
-        return null;
-    }
-
-    @Override
-    public List<QuestionDto> getAllQuestions() {
-        return null;
-    }
-
-    @Override
-    public QuestionDto updateQuestion(int qId, QuestionDto updatedQuestion) {
-        return null;
-    }
-
-    @Override
-    public void deleteQuestion(int qId) {
-
-    }
-     */
 
 }
 
