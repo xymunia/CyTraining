@@ -51,7 +51,7 @@ public class QuestionController {
 		return ResponseEntity.ok(questions);
 	}
 
-	@PutMapping(path ="/modifier_question/{id}", produces = APPLICATION_JSON_VALUE)
+	@PatchMapping(path ="/modifier_question/{id}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<QuestionDto> updateQuestion(@PathVariable("id") int qId, @RequestBody QuestionDto updatedQuestion) {
 		QuestionDto questionDto = questionService.updateQuestion(qId, updatedQuestion);
 		return ResponseEntity.ok(questionDto);
