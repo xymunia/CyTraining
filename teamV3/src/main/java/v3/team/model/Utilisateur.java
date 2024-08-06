@@ -208,11 +208,10 @@ public class Utilisateur {
 	public String userQuestionsInfo() {
 		String infosQuestions = "";
 		for (Question questionUser : questionsCreees) {
-			infosQuestions += questionUser.getQuestion() + ", " + questionUser.getCorrection() + ",\n" + questionUser.infosQuestionsReponses()
-					+ ",\n" + questionUser.getIndBonneRep() + ", " + questionUser.getIndice() + ", " + questionUser.getCertifiee() + ";\n";
+			infosQuestions += questionUser.toString() + ";\n";
 		}
 
-		return "{ " + infosQuestions + "}";
+		return "{ " + infosQuestions + " }";
 	}
 
 	public void addQuestion(Question q)
