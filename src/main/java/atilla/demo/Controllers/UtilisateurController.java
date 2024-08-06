@@ -1,6 +1,7 @@
 package atilla.demo.Controllers;
 
 import atilla.demo.classes.Filiere;
+import atilla.demo.dto.AdminDto;
 import atilla.demo.dto.FiliereDto;
 import atilla.demo.dto.UtilisateurDto;
 import atilla.demo.services.Classes.UtilisateurServiceImpl;
@@ -34,6 +35,13 @@ public class UtilisateurController {
 
         UtilisateurDto savedUtilisateur =this.utilisateurService.inscrire1(utilisateurDto);
         return new ResponseEntity<>(savedUtilisateur, HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "inscrire/admin",consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<AdminDto> inscrireAdmin(@RequestBody AdminDto adminDto){
+
+        AdminDto savedAdmin =this.utilisateurService.inscrire2(adminDto);
+        return new ResponseEntity<>(savedAdmin, HttpStatus.CREATED);
     }
 
 

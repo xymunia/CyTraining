@@ -1,20 +1,26 @@
 package atilla.demo.classes;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
-
-
-
-
+import java.util.Objects;
 
 
 @Entity
 @Table(name = "utilisateur")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype", discriminatorType =DiscriminatorType.STRING )
+@DiscriminatorValue("false" )
+@SuperBuilder
+
 public class Utilisateur {
 
 
@@ -120,5 +126,15 @@ public class Utilisateur {
         this.filiere = filiere;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Utilisateur that)) return false;
+        return Objects.equals(getNom(), that.getNom()) && Objects.equals(getPrenom(), that.getPrenom()) && Objects.equals(getMail(), that.getMail());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(getNom(), getPrenom(), getMail());
+    }
 }

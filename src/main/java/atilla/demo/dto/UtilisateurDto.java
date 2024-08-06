@@ -20,17 +20,30 @@ public class UtilisateurDto {
     private int nbQuestionsPropose;
     private int nbQuestionsValide;
     private Filiere filiere ;
+
+    private int nbApprouve;
     //private List<Long> tauxReussite;
 
 
-    public UtilisateurDto(int id, String nom, String prenom, String email, int nbQuestionsPropose, int nbQuestionsValide, Filiere filiere) {
+    public UtilisateurDto(int id, String nom, String prenom, String email, int nbQuestionsPropose, int nbQuestionsValide, Filiere filiere, int nbApprouve) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
         this.nbQuestionsPropose = nbQuestionsPropose;
         this.nbQuestionsValide = nbQuestionsValide;
-        this.filiere=filiere;
+        this.filiere = filiere;
+        this.nbApprouve = nbApprouve;
+    }
+
+
+
+    public int getNbApprouve() {
+        return nbApprouve;
+    }
+
+    public void setNbApprouve(int nbApprouve) {
+        this.nbApprouve = nbApprouve;
     }
 
     public UtilisateurDto() {

@@ -1,6 +1,7 @@
 package atilla.demo.services.Classes;
 
 import atilla.demo.Mappers.UeMapper;
+import atilla.demo.Mappers.UeMapperImpl;
 import atilla.demo.Repositories.FiliereRepository;
 import atilla.demo.Repositories.UeRepository;
 import atilla.demo.classes.Filiere;
@@ -19,11 +20,11 @@ import java.util.stream.Stream;
 public class UeServiceImpl implements UeService {
 
     private UeRepository ueRepository;
-    private UeMapper ueMapper;
+    private UeMapperImpl ueMapper;
 
     private FiliereRepository filiereRepository ;
 
-    public UeServiceImpl(UeRepository ueRepository, UeMapper ueMapper, FiliereRepository filiereRepository) {
+    public UeServiceImpl(UeRepository ueRepository, UeMapperImpl ueMapper, FiliereRepository filiereRepository) {
         this.ueRepository = ueRepository;
         this.ueMapper = ueMapper;
         this.filiereRepository = filiereRepository;

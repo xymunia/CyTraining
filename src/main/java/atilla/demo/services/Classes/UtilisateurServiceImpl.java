@@ -2,9 +2,10 @@ package atilla.demo.services.Classes;
 
 import atilla.demo.Mappers.UtilisateurMapperImpl;
 import atilla.demo.Repositories.UtilisateurRepository;
+import atilla.demo.classes.Admin;
 import atilla.demo.classes.Filiere;
 import atilla.demo.classes.Utilisateur;
-import atilla.demo.dto.FiliereDto;
+import atilla.demo.dto.AdminDto;
 import atilla.demo.dto.UtilisateurDto;
 import atilla.demo.services.Interfaces.UtilisateurService;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,8 +22,9 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+    @Autowired
     private UtilisateurMapperImpl utilisateurMapper;
-
+    @Autowired
     private FiliereServiceImpl filiereService;
 
     public UtilisateurServiceImpl(UtilisateurRepository utilisateurRepository, UtilisateurMapperImpl utilisateurMapper, FiliereServiceImpl filiereService) {
@@ -51,6 +53,24 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
 
     @Override
+    public AdminDto inscrire2(AdminDto adminDto) {
+
+        Filiere filiere = filiereService.getOrCreate(adminDto.getFiliere());
+        Admin admin;
+
+        admin = utilisateurMapper.toClasseA(adminDto);
+
+        admin.setFiliere(filiere);
+
+        Admin savedAdmin = utilisateurRepository.save(admin);
+
+        return utilisateurMapper.toDtoA(savedAdmin);
+    }
+
+
+
+
+    @Override
     public UtilisateurDto rechercherId(int id) {
         Optional<Utilisateur> optionalUtilisateur = this.utilisateurRepository.findById(id);
         Utilisateur utilisateur = optionalUtilisateur.orElseThrow(
@@ -66,9 +86,10 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         return utilisateursDTO;
     }
 
+
+
     @Override
     public UtilisateurDto rechercherMail(String mail) {
-
         Optional<Utilisateur> optionalUtilisateur= this.utilisateurRepository.findByMail(mail);
         Utilisateur utilisateur = optionalUtilisateur.orElseThrow(
                 ()-> new EntityNotFoundException("ce mail ne se trouve pas dans la BDD"));
@@ -79,13 +100,11 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Override
     public UtilisateurDto mettreàJour(int id, UtilisateurDto utilisateurDto) {
-
-            return null ;
+        return null;
     }
 
     @Override
     public void deleteUtilsateur(int id) {
-
         this.utilisateurRepository.deleteById(id);
 
     }
@@ -98,7 +117,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
 
         utilisateurBDD.setMail(utilisateurDto.getEmail());
-       // utilisateurBDD.setMdp(utilisateurDto.getMdp());
+        // utilisateurBDD.setMdp(utilisateurDto.getMdp());
         utilisateurBDD.setNom(utilisateurDto.getNom());
         utilisateurBDD.setPrenom(utilisateurDto.getPrenom());
         utilisateurBDD.setNbQuestionsPropose(utilisateurDto.getNbQuestionsPropose());
@@ -111,5 +130,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
         // Sauvegarder les modifications
         this.utilisateurRepository.save(utilisateurBDD);
+
     }
 }
+

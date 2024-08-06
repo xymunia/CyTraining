@@ -32,7 +32,7 @@ public class Filiere {
 
 
     @Column(name ="UE", unique = true)
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable( name = "UE_Filiere",
             joinColumns = @JoinColumn( name = "id" ),
             inverseJoinColumns = @JoinColumn( name = "idUE" ) )
