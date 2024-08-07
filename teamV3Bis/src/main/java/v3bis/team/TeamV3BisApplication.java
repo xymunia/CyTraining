@@ -7,11 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import v3bis.team.repositories.QuestionRepository;
 import v3bis.team.repositories.UtilisateurRepository;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 @SpringBootApplication
-public class TeamV3Application implements CommandLineRunner {
+public class TeamV3BisApplication implements CommandLineRunner {
 
     @Autowired
     UtilisateurRepository uRepo;
@@ -20,7 +17,7 @@ public class TeamV3Application implements CommandLineRunner {
     QuestionRepository qRepo;
 
     public static void main(String[] args) {
-        SpringApplication.run(TeamV3Application.class, args);
+        SpringApplication.run(TeamV3BisApplication.class, args);
     }
 
     @Override
@@ -37,18 +34,6 @@ public class TeamV3Application implements CommandLineRunner {
 
         u1.ajouterQuestion(q1);
         System.out.println(u1);*/
-
-        int second = 1000;
-        int minute = 60 * second;
-        int hour = 60 * minute;
-        int day = 24 * hour;
-
-        SimpleDateFormat frenchDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        Date now = new Date();
-        String nowDate = frenchDate.format(now);
-
-        System.out.println("Day in ms : " + day + ";\t hour in ms : " + hour + ";\t minute in ms : " + minute);
-        System.out.println("Now : " + now + ";\t Now in French format : " + nowDate + ";\t Milliseconds : " + now.getTime());
     }
 
 

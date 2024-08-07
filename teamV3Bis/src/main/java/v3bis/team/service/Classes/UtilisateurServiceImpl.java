@@ -6,8 +6,8 @@ import v3bis.team.dtos.QuestionDto;
 import v3bis.team.dtos.UtilisateurDto;
 import v3bis.team.enumerations.EtatValidation;
 import v3bis.team.exceptions.ExceptionRessourceAbsente;
-import v3.team.mapper.Interfaces.QuestionMapperImpl;
-import v3.team.mapper.Interfaces.UtilisateurMapperImpl;
+import v3bis.team.mapper.Interfaces.QuestionMapperImpl;
+import v3bis.team.mapper.Interfaces.UtilisateurMapperImpl;
 import v3bis.team.model.Question;
 import v3bis.team.model.Utilisateur;
 
