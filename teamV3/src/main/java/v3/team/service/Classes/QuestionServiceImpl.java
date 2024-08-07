@@ -74,7 +74,7 @@ public class QuestionServiceImpl implements QuestionService {
         return questions.stream().map((q) -> qMap.toDto(q))
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     public List<QuestionDto> getAllQuestionsValidees() {
         List<Question> questions = qRepo.findAllQuestionsValidees();

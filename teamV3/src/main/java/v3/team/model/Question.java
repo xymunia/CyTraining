@@ -29,7 +29,7 @@ public class Question {
 	@Column(name = "reponses")
 	List<String> reponses = new ArrayList<>();
 
-	@Column(name = "indice_bonne_reponse")
+	@Column(name = "index_bonne_reponse")
 	int indBonneRep;
 
 	String indice;
