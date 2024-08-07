@@ -74,6 +74,26 @@ public class QuestionServiceImpl implements QuestionService {
         return questions.stream().map((q) -> qMap.toDto(q))
                 .collect(Collectors.toList());
     }
+    
+    @Override
+    public List<QuestionDto> getAllQuestionsValidees() {
+        List<Question> questions = qRepo.findAllQuestionsValidees();
+        return questions.stream().map((q) -> qMap.toDto(q)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<QuestionDto> getAllQuestionsAttente()
+    {
+        List<Question> questions = qRepo.findAllQuestionsAttente();
+        //MAJ le temps d'attente des questions
+        for (Question valideeQ : questions) {
+            if ( valideeQ.getEtatValidation().equals( EtatValidation.EN_ATTENTE.getValeurEtat() ) ) {
+                dateManager.voirTempsAttente(valideeQ);
+            }
+        }
+        return questions.stream().map((q) -> qMap.toDto(q)).collect(Collectors.toList());
+    }
+
 
     //TODO : ADMIN
     @Override

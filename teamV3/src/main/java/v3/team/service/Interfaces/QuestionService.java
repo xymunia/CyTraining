@@ -15,6 +15,10 @@ public interface QuestionService {
 
     List<QuestionDto> getAllQuestions();
 
+    List<QuestionDto> getAllQuestionsValidees();
+
+    List<QuestionDto> getAllQuestionsAttente();
+
     QuestionDto updateQuestion(int qId, QuestionDto updatedQuestion);
 
     QuestionDto validerQuestion(int qId);

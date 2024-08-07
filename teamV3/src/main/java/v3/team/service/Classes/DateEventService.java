@@ -85,23 +85,24 @@ public class DateEventService {
                 System.out.println("La question n'est pas en attente!\n");
 
             } else {
-
+                //Équivalents en ms
                 long second = 1000;
                 long minute = 60 * second;
                 long hour = 60 * minute;
                 long day = 24 * hour;
                 long year = 365 * day;
 
+                //Calculer la différence en ms entre le moment de la mise en attente et le moment de l'action
                 long demandeMilliSec = majTpsAtt.demandeMillisecondes();
                 Date now = new Date();
                 long nowMilliseconds = now.getTime();
                 long difference = nowMilliseconds - demandeMilliSec;
+                //Conversion des ms en d'autres unités de temps
                 var years = (int) (difference / year);
                 var days = (int) ((difference % year) / day);
                 var hours = (int) ((difference % day) / hour);
                 var minutes = (int) ((difference % hour) / minute);
-                System.out.println("Moment demande : "+majTpsAtt.getDateDemandeAjout()+";\t Maintenant : "+now+"\n");
-                System.out.println("Years : "+years+";\t Days : "+days+";\t Hours : "+hours+";\t Minutes : "+minutes+"\n");
+
                 majTpsAtt.setTempsAttente("");
                 if (years > 0) {
                     String annees = years > 1 ? years + "ans " : years + "an ";

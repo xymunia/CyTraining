@@ -54,6 +54,26 @@ public class QuestionController {
 		return ResponseEntity.ok(questions);
 	}
 
+	/**
+	 * Afficher les questions validées uniquement.
+	 */
+	//TODO : ADMIN
+	@GetMapping(path = "/all_validées", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<QuestionDto>> getAllQuestionsValidees() {
+		List<QuestionDto> questions = questionService.getAllQuestionsValidees();
+		return ResponseEntity.ok(questions);
+	}
+
+	/**
+	 * Afficher les questions en attente uniquement.
+	 */
+	//TODO : ADMIN
+	@GetMapping(path = "/all_attente", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<QuestionDto>> getAllQuestionsAttente() {
+		List<QuestionDto> questions = questionService.getAllQuestionsAttente();
+		return ResponseEntity.ok(questions);
+	}
+
 	//TODO : ADMIN -> modifier questions en attente / validées
 	@PatchMapping(path ="/modifier_question/{id}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<QuestionDto> updateQuestion(@PathVariable("id") int qId, @RequestBody QuestionDto updatedQuestion) {
