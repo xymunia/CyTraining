@@ -55,7 +55,7 @@ public class UtilisateurController {
 
     //In postman : enter data in Body > raw and choose JSON format (in blue)
     //Fields are inside ""
-    @PutMapping(path = "/modifier/{id}", produces = APPLICATION_JSON_VALUE)
+    @PatchMapping(path = "/modifier/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UtilisateurDto> updateUtilisateur(@PathVariable("id") int uId, @RequestBody UtilisateurDto updatedUtilisateur) {
         UtilisateurDto utilisateurDto = utilisateurService.updateUtilisateur(uId, updatedUtilisateur);
         return ResponseEntity.ok(utilisateurDto);
