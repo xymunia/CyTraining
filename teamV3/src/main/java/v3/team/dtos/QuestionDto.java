@@ -28,7 +28,11 @@ public class QuestionDto {
 
     String etatValidation;
 
-    int certifiee;
+    String dateValidee;
+
+    String tempsAttente;
+
+    String dateDemandeAjout;
 
     Utilisateur createur;
 
@@ -40,8 +44,8 @@ public class QuestionDto {
         this.reponses = reponses;
         this.indBonneRep = indBonneRep;
         this.indice = indice;
-        EtatValidation.NON_PROPOSEE.getValeurEtat();
-        this.certifiee = 0;
+        EtatValidation.EN_ATTENTE.getValeurEtat();
+        this.dateValidee = " - ";
         this.createur = createur;
     }
 
@@ -75,9 +79,17 @@ public class QuestionDto {
 
     public void setEtatValidation(String etat) { etatValidation = etat; }
 
-    public int getCertifiee() { return certifiee; }
+    public String getDateValidee() { return dateValidee; }
 
-    public void setCertifiee(int certifiee) { this.certifiee = certifiee; }
+    public void setDateValidee(String dateValidee) { this.dateValidee = dateValidee; }
+
+    public String getTempsAttente() { return tempsAttente; }
+
+    public void setTempsAttente(String tempsAttente) { this.tempsAttente = tempsAttente; }
+
+    public String getDateDemandeAjout() { return dateDemandeAjout; }
+
+    public void setDateDemandeAjout(String dateDemandeAjout) { this.dateDemandeAjout = dateDemandeAjout; }
 
     public Utilisateur getCreateur() { return createur; }
 

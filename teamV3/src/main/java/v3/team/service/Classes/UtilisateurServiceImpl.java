@@ -25,25 +25,24 @@ import java.util.stream.Collectors;
 @Service
 public class UtilisateurServiceImpl implements UtilisateurService {
 
-    //private List<Utilisateur> utilisateurList;
 
     @Autowired
     final UtilisateurRepository uRepo;
 
     final UtilisateurMapperImpl uMap;
 
+    @Autowired
+    final DateEventService dateManager;
+
     QuestionRepository qServRepo;
 
     QuestionMapperImpl qServMapper;
 
-    @PersistenceContext
-    EntityManager em;
-
-
-    public UtilisateurServiceImpl(UtilisateurRepository uRepo, UtilisateurMapperImpl uMap, QuestionRepository qServRepo,
-    QuestionMapperImpl qServMapper) {
+    public UtilisateurServiceImpl(UtilisateurRepository uRepo, UtilisateurMapperImpl uMap, DateEventService dateManager,
+    QuestionRepository qServRepo, QuestionMapperImpl qServMapper) {
         this.uRepo = uRepo;
         this.uMap = uMap;
+        this.dateManager = dateManager;
         this.qServRepo = qServRepo;
         this.qServMapper = qServMapper;
     }
@@ -63,9 +62,8 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     @Override
     public UtilisateurDto getUtilisateurById(int uId)
     {
-        Utilisateur u = uRepo.findById(uId)
-                .orElseThrow(()
-                        -> new ExceptionRessourceAbsente("Utilisateur data is not associated with given id "+uId));
+        Utilisateur u = uRepo.findById(uId).orElseThrow(
+                () -> new ExceptionRessourceAbsente("Utilisateur data is not associated with given id "+uId));
         //System.out.println(u.toString());         Exemple d'affichage d'un user
         return uMap.toDto(u);
     }
@@ -105,8 +103,13 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         );
         Question q = qServMapper.toClasse(qDto);
         //Setting validation state manually since the mapper class won't allow overwriting
-        q.setEtatValidation(EtatValidation.NON_PROPOSEE.getValeurEtat());
+        q.setEtatValidation(EtatValidation.EN_ATTENTE.getValeurEtat());
+        //Initialize validation date
+        q.setDateValidee( dateManager.resetDate() );
+        dateManager.dateNouvDemande(q);
+        dateManager.voirTempsAttente(q);
         u.addQuestion(q);
+        u.setNbQuestionsProposees( u.getNbQuestionsProposees() + 1 );
         q.setCreateur(u);
         try {
             //Updating repositories
@@ -126,8 +129,13 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         Utilisateur u = uRepo.findById(uId).orElseThrow(
                 () -> new ExceptionRessourceAbsente("Aucun utilisateur associé à l'id "+uId)
         );
-
         List<Question> listeQuestions = u.getQuestionsCreees();
+        //MAJ le temps d'attente de chaque question creee
+        for (Question creeeQ : listeQuestions) {
+            if ( creeeQ.getEtatValidation().equals( EtatValidation.EN_ATTENTE.getValeurEtat() ) ) {
+                dateManager.voirTempsAttente(creeeQ);
+            }
+        }
         return listeQuestions.stream().map((q) -> qServMapper.toDto(q))
                 .collect(Collectors.toList());
     }
@@ -146,15 +154,15 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             if ( u.getId() != uId ) {
                 System.out.println("L'utilisateur n'a pas créé la question associée à l'id "+qId+"\n");
             } else {
-                //Allow creator to modify a question that's neither waiting nor validated
-                if ( q.getEtatValidation().equals( EtatValidation.NON_PROPOSEE.getValeurEtat() )
-                        || q.getEtatValidation().equals(EtatValidation.REFUSEE.getValeurEtat()) ) {
+                //Allow creator to modify a question that's not validated
+                if ( !q.getEtatValidation().equals( EtatValidation.VALIDEE.getValeurEtat() ) ) {
 
                     q.setQuestion(updatedQuestion.getQuestion());
                     q.setCorrection(updatedQuestion.getCorrection());
                     q.setReponses(updatedQuestion.getReponses());
                     q.setIndBonneRep(updatedQuestion.getIndBonneRep());
                     q.setIndice(updatedQuestion.getIndice());
+                    dateManager.voirTempsAttente(q);
                     updatedQuestionObj = qServRepo.save(q);
                     //No need to save changes to creator thanks to the cascading of the JPA relationship
 
@@ -163,11 +171,9 @@ public class UtilisateurServiceImpl implements UtilisateurService {
                 }
             }
             return qServMapper.toDto(updatedQuestionObj);
-
-        } catch (ExceptionRessourceAbsente e) {
-            throw new RuntimeException(e);
-
-        } catch (Exception e) {
+        }
+        catch (ExceptionRessourceAbsente e) { throw new RuntimeException(e); }
+        catch (Exception e) {
             System.out.println("ERREUR MODIFICATION DE LA QUESTION D'ID " + qId + " DE L'UTILISATEUR " + uId +"\n");
             throw new RuntimeException(e);
         }
@@ -176,23 +182,30 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Override
     @Transactional
-    public void demandeValidation(int uId, int qId)
+    public QuestionDto nouvDemandeValidation(int uId, int qId)
     {
         Question q = qServRepo.findById(qId).orElseThrow(
-                () -> new ExceptionRessourceAbsente("Aucune question associée à l'id "+qId)
-        );
+                () -> new ExceptionRessourceAbsente( "Aucune question associée à l'id "+qId) );
         Utilisateur u = q.getCreateur();
+        Question demandeQ = null;
         //For tests purposes
         if ( u.getId() != uId ) {
-            System.out.println("Validation Impossible! Vous n'avez pas créé cette question \n");
-        } else if ( q.getEtatValidation().equals(EtatValidation.NON_PROPOSEE.getValeurEtat())
-                || q.getEtatValidation().equals(EtatValidation.REFUSEE.getValeurEtat()) ) {
-            q.setEtatValidation(EtatValidation.EN_ATTENTE.getValeurEtat());
-            qServRepo.save(q);
-            uRepo.save(u);
+            System.out.println("Demande Impossible! Vous n'avez pas créé cette question \n");
         }
+        else {
+            if ( q.getEtatValidation().equals( EtatValidation.REFUSEE.getValeurEtat() ) ) {
+                q.setEtatValidation(EtatValidation.EN_ATTENTE.getValeurEtat());
+                dateManager.dateNouvDemande(q);
+                dateManager.voirTempsAttente(q);
+                u.setNbQuestionsProposees( u.getNbQuestionsProposees() + 1 );
+                demandeQ = qServRepo.save(q);
+                //No need to save changes to creator thanks to the cascading of the JPA relationship
+            } else {
+                System.out.println("Cette question est déjà validée!\n");
+            }
+        }
+        return qServMapper.toDto(demandeQ);
     }
-
 
     @Override
     @Transactional
@@ -225,7 +238,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         try {
             List<Question> effacerQuestions = u.getQuestionsCreees();
             for (Question userQuestion : effacerQuestions) {
-                //Validated questions remain accessible to everyone during revisions
+                //Validated questions remain accessible to everyone for revisions
                 if ( userQuestion.getEtatValidation().equals( EtatValidation.VALIDEE.getValeurEtat() )) {
                     userQuestion.setCreateur(null);
                     qServRepo.save(userQuestion);

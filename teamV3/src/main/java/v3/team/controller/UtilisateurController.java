@@ -91,10 +91,10 @@ public class UtilisateurController {
     }
 
 
-    @PatchMapping(path = "/demande_validation/{id_user}/{id_q}")
-    public ResponseEntity<String> askQuestionValidation(@PathVariable("id_user") int uId, @PathVariable("id_q") int qId) {
-        utilisateurService.demandeValidation(uId, qId);
-        return ResponseEntity.ok("Vérifiez l'état de validation avec un Get.");
+    @PatchMapping(path = "/nouv_demande_validation/{id_user}/{id_q}")
+    public ResponseEntity<QuestionDto> askQuestionValidation(@PathVariable("id_user") int uId, @PathVariable("id_q") int qId) {
+        QuestionDto nouvQ = utilisateurService.nouvDemandeValidation(uId, qId);
+        return ResponseEntity.ok(nouvQ);
     }
 
 

@@ -2,7 +2,6 @@ package v3.team.enumerations;
 
 public enum EtatValidation {
 
-    NON_PROPOSEE("Non proposée"),
     EN_ATTENTE("En attente"),
     VALIDEE("Validée"),
     REFUSEE("Refusée");

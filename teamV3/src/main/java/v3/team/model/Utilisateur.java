@@ -19,7 +19,7 @@ public class Utilisateur {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	int id;
 
-	@Column(name = "prénom")
+	@Column(name = "prenom")
 	String prenom;
 
 	String nom;
@@ -29,22 +29,11 @@ public class Utilisateur {
 	@Column(name = "mot_de_passe")
 	String mdp;
 
-	@Column(name = "nb_questions_proposées")
+	@Column(name = "nb_questions_proposees")
 	int nbQuestionsProposees;
 
-	@Column(name = "nb_questions_validées")
+	@Column(name = "nb_questions_validees")
 	int nbQuestionsValides;
-
-	//Clé étrangère
-	/*
-	@Column(name = "filière")
-	 Filiere filiere;
-	*/
-
-	//Clé étrangère
-	/*
-	Taux taux;
-	*/
 
 	/**
 	 * Association : Un utilisateur peut créer plusieurs questions
@@ -60,26 +49,6 @@ public class Utilisateur {
 	@Column(unique = true)
 	List<Question> questionsCreees = new ArrayList<>();
 
-	//Clé étrangère
-	/*
-	@Column(name = "révision")
-	Revision revision;
-	*/
-
-	//TODO: Héritage
-
-	// ce constructeur ne sert que pour transformer un utilisateur en admin
-	/*public Utilisateur(Utilisateur u)
-	{
-		id = u.getId();
-		nom = u.getNom();
-		//filiere = u.getFiliere();
-		email = u.getEmail();
-		mdp = u.getMdp();
-		//taux = u.getTaux();
-		idsQuestionsCertifiees = u.getIdsQuestionsCertifiees();
-		//revision = u.getRevision();
-	}*/
 
 	/**
 	 * Constructeur sans argument
@@ -153,7 +122,7 @@ public class Utilisateur {
 		this.id = id;
 	}
 
-	public String getPrenom() {return prenom;}
+	public String getPrenom() { return prenom; }
 
 	public void setPrenom(String nouvPrenom) {prenom = nouvPrenom;}
 
@@ -188,18 +157,6 @@ public class Utilisateur {
 	public int getNbQuestionsValides() { return this.nbQuestionsValides;}
 
 	public void setNbQuestionsValides(int nbQValidees) { this.nbQuestionsValides = nbQValidees;}
-
-
-	/*public Filiere getFiliere() { return filiere; }
-
-
-	public void setFiliere(Filiere filiere) { this.filiere = filiere; }
-
-
-	public Taux getTaux() { return taux; }
-
-
-	public void setTaux(Taux taux) { this.taux = taux; }*/
 
 	public List<Question> getQuestionsCreees() {
 		return questionsCreees;
@@ -241,24 +198,6 @@ public class Utilisateur {
 
 
 	public void setRevision(Revision revision) { this.revision = revision; }
-
-
-	public Revision reviser(List<Question> questions)
-	{
-		// on gere la liste de question à partir d'un controller (jsp lequel) et on met la liste dans cette methode pour set l'attribut
-
-	    this.revision = new Revision(questions, this);
-
-	    return revision;
-	}
-
-	public void updateTaux()
-	{
-		// update le taux de reussite puis le taux de completion
-		taux.updateTaux(revision);
-
-		revision = null;
-	}
 	*/
 
 	@Override

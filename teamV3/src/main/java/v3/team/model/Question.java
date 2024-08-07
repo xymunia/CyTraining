@@ -1,11 +1,13 @@
 package v3.team.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import v3.team.enumerations.EtatValidation;
+import v3.team.service.Classes.DateEventService;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import java.util.ArrayList;
@@ -24,19 +26,24 @@ public class Question {
 
 	String correction;
 
-	@Column(name = "réponses")
+	@Column(name = "reponses")
 	List<String> reponses = new ArrayList<>();
 
-	@Column(name = "indice_bonne_réponse")
+	@Column(name = "indice_bonne_reponse")
 	int indBonneRep;
 
 	String indice;
 
-	@Column(name = "état_validation")
+	@Column(name = "etat_validation")
 	String etatValidation;
 
-	@Column(name = "validation")
-	int certifiee;
+	@Column(name = "date validation")
+	String dateValidee;
+
+	String tempsAttente;
+
+	@Column(name = "date de demande")
+	String dateDemandeAjout;
 
 	//TODO : uniD -> @ dans UNE DES DEUX ; nom clé étrangère = nom_autre_table_id
 	/**
@@ -44,7 +51,7 @@ public class Question {
 	 */
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	//@JsonManagedReference
-	@JoinColumn(name = "id_créateur")
+	@JoinColumn(name = "id_createur")
 	Utilisateur createur;
 
 
@@ -52,12 +59,17 @@ public class Question {
 	//Chapitre chapitre;
 
 	/**
+	 * Ignorer dans la BDD
+	 */
+	@Transient
+	DateEventService dateManager;
+
+	/**
 	 * Constructeur sans argument
 	 *
 	 * Nécessaire pour les contrôleurs
 	 */
-	public Question(int id, String question, String correction, List<String> reponses, int indBonneRep, String indice, int certifiee, Utilisateur createur) {}
-
+	public Question() {}
 
 	/**
 	 * Constructeur avec clés étrangères (complétion en cours)
@@ -69,8 +81,8 @@ public class Question {
 		this.reponses = reponses;
 		this.indBonneRep = indBonneRep;
 		this.indice = indice;
-		this.etatValidation = EtatValidation.NON_PROPOSEE.getValeurEtat();
-		this.certifiee = 0;
+		this.etatValidation = EtatValidation.EN_ATTENTE.getValeurEtat();
+		this.dateValidee = " -";
 		this.createur = createur;
 		//this.chapitre = chapitre;
 	}
@@ -86,13 +98,11 @@ public class Question {
 		this.reponses = reponses;
 		this.indBonneRep = indBonneRep;
 		this.indice = indice;
-		this.etatValidation = EtatValidation.NON_PROPOSEE.getValeurEtat();
-		this.certifiee = 0;
+		this.etatValidation = EtatValidation.EN_ATTENTE.getValeurEtat();
+		this.dateValidee = " - ";
 		this.createur = createur;
 		//this.chapitre = chapitre;
 	}
-
-	public Question() {}
 
 
 	public int getId() {
@@ -167,12 +177,50 @@ public class Question {
 
 	public void setEtatValidation(String etat) { etatValidation = etat; }
 
-	public int getCertifiee() {
-		return certifiee;
+	public String getDateValidee() {
+		return dateValidee;
 	}
 
-	public void setCertifiee(int approuve) {
-		this.certifiee = approuve;
+	public String getTempsAttente() { return tempsAttente; }
+
+	public long demandeMillisecondes()
+	{
+		Date dateDemande = null;
+		if ( !this.getDateDemandeAjout().equals(null) ) {
+			SimpleDateFormat eng = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			String engDemande = eng.format( new Date(this.getDateDemandeAjout()) );
+			dateDemande = new Date(engDemande);
+			System.out.println(dateDemande);
+		}
+		return dateDemande.getTime();
+	}
+
+	public void setTempsAttente(String tempsAttente) { this.tempsAttente = tempsAttente; }
+
+	/**
+	 * Mettre à jour le temps d'attente à l'appel de .toString().
+	 * Utile pour des utilisations en CLI.
+	 *
+	 * NB : inutile pour les requêtes API actuelles car la méthode .voirTempsAttente() de
+	 * DateEventService est appelée à chaque Get.
+	 */
+	public String voirTempsAttente() {
+		if ( this.etatValidation.equals( EtatValidation.EN_ATTENTE.getValeurEtat() ) ) {
+			dateManager.voirTempsAttente(this);
+		}
+		return tempsAttente;
+	}
+
+	public String getDateDemandeAjout() { return dateDemandeAjout; }
+
+	public void setDateDemandeAjout(String dateDemandeAjout) { this.dateDemandeAjout = dateDemandeAjout; }
+
+	public DateEventService getDateManager() { return dateManager; }
+
+	public void setDateManager(DateEventService dateManager) { this.dateManager = dateManager; }
+
+	public void setDateValidee(String approuve) {
+		this.dateValidee = approuve;
 	}
 
 	public Utilisateur getCreateur() { return createur; }
@@ -183,8 +231,9 @@ public class Question {
 	@Override
 	public String toString() {
 		return "Question {" + "id = " + id + ", question = " + question + ", correction = " + correction +
-				",\nréponses = " + this.infosQuestionsReponses() + ",\nindBonneRép = " + indBonneRep +", indice = " + indice +
-				", état = " + this.etatValidation + ", certifiee = " + certifiee + /*", créateur = " + createur.toString() +*/ "}\n";
+				",\nreponses = " + this.infosQuestionsReponses() + ",\nindBonneRep = " + indBonneRep +", indice = " + indice +
+				", etat = " + this.etatValidation + ", date validation = " + dateValidee + ", date de demande = " + dateDemandeAjout +
+				", temps d'attente = " + this.voirTempsAttente() + /*", createur = " + createur.toString() +*/ "}\n";
 	}
 
     /*

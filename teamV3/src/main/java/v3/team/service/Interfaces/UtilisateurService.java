@@ -24,7 +24,7 @@ public interface UtilisateurService {
 
     QuestionDto updateQuestion(int uId, int qId, QuestionDto updatedQuestion);
 
-    void demandeValidation(int uId, int qId);
+    QuestionDto nouvDemandeValidation(int uId, int qId);
 
     void deleteQuestion(int uId, int qId);
 
