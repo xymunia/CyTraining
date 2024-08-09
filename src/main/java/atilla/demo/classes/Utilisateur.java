@@ -3,13 +3,8 @@ package atilla.demo.classes;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
 import java.util.Objects;
 
 
@@ -18,10 +13,10 @@ import java.util.Objects;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dtype", discriminatorType =DiscriminatorType.STRING )
-@DiscriminatorValue("false" )
+@DiscriminatorValue("utilisateur" )
 @SuperBuilder
 
-public class Utilisateur {
+public class  Utilisateur {
 
 
     @Id
@@ -49,7 +44,7 @@ public class Utilisateur {
 
 
     public Utilisateur(int id, String nom, String prenom, String mail, String mdp, int nbQuestionsPropose, int nbQuestionsValide, Filiere filiere) {
-        this.id = id;
+       // this.id = id;
         this.nom = nom;
         this.prenom = prenom;
         this.mail = mail;

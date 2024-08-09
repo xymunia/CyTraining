@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@DiscriminatorValue("true")
+@DiscriminatorValue("admin")
 @SuperBuilder
 @Data
 public class Admin extends Utilisateur{

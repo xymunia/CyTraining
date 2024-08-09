@@ -37,7 +37,7 @@ public interface UtilisateurMapper {
     @Mapping(source="nbApprouve", target = "nbApprouve")
     @Mapping(source = "email",target = "mail")
 
-   // @Mapping(target = "dtype", constant = "true")
+    //@Mapping(target = "dtype", constant = "true")
     Admin toClasseA(AdminDto adminDto);
 
 
@@ -50,6 +50,8 @@ public interface UtilisateurMapper {
 
     @Mapping(target = "nbApprouve", source = "nbApprouve", ignore = true)
     UtilisateurDto toDto( Admin admin);
+
+    AdminDto toDtoA(Utilisateur utilisateur);
 
 
 

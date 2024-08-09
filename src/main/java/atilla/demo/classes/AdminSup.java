@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @DiscriminatorValue("adminSup")
 @EqualsAndHashCode(callSuper=true)
-public class AdminSup extends Utilisateur{
+public class AdminSup extends Utilisateur {
 
     private int code ;
 

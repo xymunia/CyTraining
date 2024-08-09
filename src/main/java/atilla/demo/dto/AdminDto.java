@@ -6,6 +6,7 @@ import java.util.Objects;
 
 
 public class AdminDto extends UtilisateurDto{
+    private int nbApprouve;
 
     public AdminDto(int id, String nom, String prenom, String email, int nbQuestionsPropose, int nbQuestionsValide, Filiere filiere, int nbApprouve, int nbApprouve1) {
         super(id, nom, prenom, email, nbQuestionsPropose, nbQuestionsValide, filiere, nbApprouve);
@@ -16,7 +17,7 @@ public class AdminDto extends UtilisateurDto{
         this.nbApprouve = nbApprouve;
     }
 
-    private int nbApprouve;
+
 
     public AdminDto() {
     }

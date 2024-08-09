@@ -56,6 +56,11 @@ public class UtilisateurController {
         return this.utilisateurService.rechercherMail(mail);
     }
 
+    @GetMapping(path="admins", produces =APPLICATION_JSON_VALUE)
+    public Stream<AdminDto> afficherAdmins (){
+        return this.utilisateurService.afficherAdmins();
+    }
+
     @GetMapping(path = "all", produces = APPLICATION_JSON_VALUE)
     public Stream<UtilisateurDto> afiicherALL (){
         return this.utilisateurService.afficherAll();

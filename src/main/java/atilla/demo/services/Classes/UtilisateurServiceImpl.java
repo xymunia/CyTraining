@@ -6,8 +6,10 @@ import atilla.demo.classes.Admin;
 import atilla.demo.classes.Filiere;
 import atilla.demo.classes.Utilisateur;
 import atilla.demo.dto.AdminDto;
+import atilla.demo.dto.AdminSupDto;
 import atilla.demo.dto.UtilisateurDto;
 import atilla.demo.services.Interfaces.UtilisateurService;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,7 +69,10 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         return utilisateurMapper.toDtoA(savedAdmin);
     }
 
-
+    @Override
+    public AdminSupDto inscrire3(AdminSupDto adminSupDto) {
+        return null;
+    }
 
 
     @Override
@@ -85,6 +90,16 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         Stream<UtilisateurDto> utilisateursDTO = utilisateurs.stream().map(utilisateurMapper::toDTo);
         return utilisateursDTO;
     }
+
+    public Stream<AdminDto> afficherAdmins() {
+        List<Admin> admins = this.utilisateurRepository.findallAdmins();
+
+        Stream<AdminDto> adminsDto = admins.stream().map(utilisateurMapper::toDtoA);
+        return adminsDto ;
+
+    }
+
+
 
 
 
@@ -132,5 +147,18 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         this.utilisateurRepository.save(utilisateurBDD);
 
     }
+
+    /*@PostConstruct
+    public void init() {
+        // Ajout de données de test
+        Utilisateur user = new Utilisateur();
+        user.setNom("User1");
+        utilisateurRepository.save(user);
+
+        Admin admin = new Admin();
+        admin.setNom("Admin1");
+        admin.setNbApprouve(7);
+        utilisateurRepository.save(admin);
+    }*/
 }
 

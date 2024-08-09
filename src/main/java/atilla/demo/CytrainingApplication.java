@@ -40,8 +40,8 @@ public class CytrainingApplication implements CommandLineRunner {
 		//utilisateurRepository.save(utilisateur);
 		//Admin admin = new Admin(4,"kenza2","mouharrar2", "sduqeihdz@qsuhgPZ.com", "qheil", 4,5,null, 4);
 		//utilisateurRepository.save(admin);
-		List<Utilisateur> utilisateurs = this.utilisateurRepository.findAll();
-		System.out.println(utilisateurs);
+		//List<Utilisateur> utilisateurs = this.utilisateurRepository.findAll();
+		//System.out.println(utilisateurs);
 		
 
 
